@@ -30,12 +30,12 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.5}
 body{min-height:100vh;display:flex;flex-direction:column}
-
+ 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
+ 
 /* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
 .logo{font-family:var(--font-mono);font-size:16px;font-weight:700;letter-spacing:2px;color:var(--accent)}
@@ -45,17 +45,17 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .nav-btn:hover{color:var(--text);background:var(--bg3)}
 .nav-btn.active{color:var(--accent);background:var(--bg3)}
 .nav-btn svg{width:14px;height:14px;opacity:.7}
-
+ 
 /* MAIN */
 .main{flex:1;overflow-y:auto}
 .page{display:none;padding:24px;max-width:1100px;margin:0 auto}
 .page.active{display:block}
-
+ 
 /* SECTION HEADER */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .section-title{font-family:var(--font-mono);font-size:13px;letter-spacing:1px;color:var(--text2);text-transform:uppercase}
 .section-actions{display:flex;gap:8px}
-
+ 
 /* METRICS GRID */
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
 .metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px}
@@ -66,29 +66,29 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .metric-value.blue{color:var(--accent3)}
 .metric-value.yellow{color:var(--accent)}
 .metric-sub{font-size:11px;color:var(--text3);margin-top:6px}
-
+ 
 /* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .card-title{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
-
+ 
 /* GRID 2 */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-
+ 
 /* TABLE */
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{text-align:left;color:var(--text3);font-weight:500;font-size:11px;letter-spacing:.6px;text-transform:uppercase;padding:0 12px 10px 0;border-bottom:1px solid var(--border)}
 .tbl td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tr:hover td{background:var(--bg3)}
-
+ 
 /* BADGES */
 .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 8px;border-radius:4px;text-transform:uppercase;font-family:var(--font-mono)}
 .badge-p{background:#0d2e0d;color:var(--success);border:1px solid #1a4a1a}
 .badge-np{background:#2e0d0d;color:var(--danger);border:1px solid #4a1a1a}
 .badge-pc{background:#0d1e2e;color:var(--accent3);border:1px solid #1a2e4a}
 .badge-nt{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
-
+ 
 /* FECHA BLOCK */
 .fecha-block{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
 .fecha-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--bg2);cursor:pointer;transition:background .1s;user-select:none}
@@ -104,7 +104,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .fecha-hdr-monto{font-family:var(--font-mono);font-size:12px;color:var(--text2)}
 .fecha-body{display:none;padding:16px 18px;border-top:1px solid var(--border);background:var(--bg)}
 .fecha-body.open{display:block}
-
+ 
 /* PERSON ROW */
 .person-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
 .person-row:last-child{border-bottom:none}
@@ -112,7 +112,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .person-sub{font-size:11px;color:var(--text3);margin-top:2px}
 .person-monto{font-family:var(--font-mono);font-size:13px}
 .person-monto.red{color:var(--danger)}
-
+ 
 /* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .form-row.cols3{grid-template-columns:1fr 1fr 1fr}
@@ -122,7 +122,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font-sans);font-size:13px;outline:none;transition:border-color .15s}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
 .form-group select option{background:var(--bg3)}
-
+ 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font-sans);font-size:13px;cursor:pointer;transition:all .15s;font-weight:500}
 .btn:hover{background:var(--bg4);border-color:var(--border2)}
@@ -135,23 +135,23 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-add-row{width:100%;background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:8px;border-radius:var(--radius);cursor:pointer;font-family:var(--font-sans);font-size:12px;margin-top:8px;transition:all .15s}
 .btn-add-row:hover{border-color:var(--accent);color:var(--accent)}
-
+ 
 /* FILTERS */
 .filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
 .filters select,.filters input{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px;color:var(--text);font-family:var(--font-sans);font-size:12px;outline:none}
 .filters select:focus,.filters input:focus{border-color:var(--accent)}
-
+ 
 /* TABS */
 .tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border)}
 .tab{background:none;border:none;font-family:var(--font-sans);font-size:13px;color:var(--text3);padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-
+ 
 /* MONTH SELECTOR */
 .month-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg)}
 .month-bar label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
 .month-bar select{background:transparent;border:none;color:var(--text);font-family:var(--font-mono);font-size:14px;font-weight:700;outline:none;cursor:pointer}
-
+ 
 /* CHART BAR */
 .bar-chart{display:flex;flex-direction:column;gap:8px}
 .bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
@@ -159,7 +159,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .bar-track{flex:1;background:var(--bg3);border-radius:3px;height:8px;position:relative}
 .bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
 .bar-val{width:90px;font-family:var(--font-mono);font-size:11px;color:var(--text2)}
-
+ 
 /* REPORT */
 .report-section{margin-bottom:28px}
 .report-section h3{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -170,14 +170,14 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .report-v.green{color:var(--success)}
 .report-v.red{color:var(--danger)}
 .report-v.yellow{color:var(--accent)}
-
+ 
 /* EMPTY */
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
-
+ 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#000;font-weight:700;font-size:13px;padding:12px 20px;border-radius:var(--radius);font-family:var(--font-mono);transform:translateY(80px);opacity:0;transition:all .3s;z-index:999}
 .toast.show{transform:translateY(0);opacity:1}
-
+ 
 /* PRINT */
 @media print{
   .topbar,.nav,.filters,.btn,.tabs,.month-bar,.btn-add-row{display:none!important}
@@ -189,7 +189,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .card-title,.section-title,.metric-label,.tbl th,.report-k{color:#666!important}
   .tbl td,.person-row{border-color:#eee!important}
 }
-
+ 
 /* RESPONSIVE */
 @media(max-width:700px){
   .grid2{grid-template-columns:1fr}
@@ -203,7 +203,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 </style>
 </head>
 <body>
-
+ 
 <div class="topbar">
   <div class="logo">MALIANTEO <span>// 2026</span></div>
   <nav class="nav">
@@ -229,9 +229,9 @@ body{min-height:100vh;display:flex;flex-direction:column}
     </button>
   </nav>
 </div>
-
+ 
 <div class="main">
-
+ 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="month-bar">
@@ -265,7 +265,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
     <div id="dash-comparativo" class="bar-chart"></div>
   </div>
 </div>
-
+ 
 <!-- FECHAS -->
 <div id="page-fechas" class="page">
   <div class="filters">
@@ -286,7 +286,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   </div>
   <div id="fechas-list"></div>
 </div>
-
+ 
 <!-- PAGOS -->
 <div id="page-pagos" class="page">
   <div class="tabs">
@@ -333,14 +333,32 @@ body{min-height:100vh;display:flex;flex-direction:column}
     </div>
   </div>
 </div>
-
+ 
 <!-- NUEVA FECHA -->
 <div id="page-nueva" class="page">
   <div class="card">
-    <div class="card-header"><span class="card-title">Datos del evento</span></div>
+    <div class="card-header">
+      <span class="card-title">Datos del evento</span>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text3)">Plantilla:</span>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Cruza')" style="border-color:#534AB7;color:#AFA9EC">⚡ Cruza</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('CHN')" style="border-color:#1a3a2a;color:#5aaa7a">⚡ CHN</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Porteña')" style="border-color:#3a2a1a;color:#cc8844">⚡ Porteña</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Lanús')" style="border-color:#3a1a1a;color:#cc4444">⚡ Lanús</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('NQN')" style="border-color:#1a2a3a;color:#4488cc">⚡ NQN</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Aeropuerto')" style="border-color:#2a2a1a;color:#aaaa44">⚡ Aeropuerto</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Forest')" style="border-color:#1a3a1a;color:#44aa44">⚡ Forest</button>
+      </div>
+    </div>
     <div class="form-row cols3">
       <div class="form-group"><label>Fecha</label><input type="date" id="nf-fecha"></div>
-      <div class="form-group"><label>Evento / Lugar</label><input type="text" id="nf-evento" placeholder="Ej: Cruza, Lobos..."></div>
+      <div class="form-group"><label>Evento / Lugar</label>
+        <input type="text" id="nf-evento" placeholder="Ej: Cruza, CHN..." list="venues-list" oninput="togglePptoSection()">
+        <datalist id="venues-list">
+          <option value="Cruza"><option value="CHN"><option value="Porteña">
+          <option value="Lanús"><option value="NQN"><option value="Aeropuerto"><option value="Forest">
+        </datalist>
+      </div>
       <div class="form-group"><label>Mes</label>
         <select id="nf-mes">
           <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
@@ -354,36 +372,57 @@ body{min-height:100vh;display:flex;flex-direction:column}
     </div>
     <div class="form-row cols3">
       <div class="form-group"><label>Recaudado total ($)</label><input type="number" id="nf-recaudado" placeholder="0"></div>
-      <div class="form-group"><label>Presupuesto gastos ($)</label><input type="number" id="nf-ppto" placeholder="0"></div>
       <div class="form-group"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
     </div>
+    <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
+      <div class="form-group"><label>Presupuesto PR ($)</label><input type="number" id="nf-ppto-pr" placeholder="0" oninput="actualizarVsPpto()"></div>
+      <div class="form-group"><label>Presupuesto DJs ($)</label><input type="number" id="nf-ppto-dj" placeholder="0" oninput="actualizarVsPpto()"></div>
+      <div class="form-group"><label>Presupuesto PH ($)</label><input type="number" id="nf-ppto-ph" placeholder="0" oninput="actualizarVsPpto()"></div>
+    </div>
   </div>
-
+ 
   <div class="card">
-    <div class="card-header"><span class="card-title">PR / Promotores</span><button class="btn btn-sm" onclick="addStaffRow('pr-rows','PR')">+ Agregar</button></div>
+    <div class="card-header">
+      <span class="card-title">PR / Promotores</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="pr-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addStaffRow('pr-rows','PR')">+ Agregar</button>
+      </div>
+    </div>
     <div id="pr-rows"></div>
   </div>
-
+ 
   <div class="card">
-    <div class="card-header"><span class="card-title">DJs</span><button class="btn btn-sm" onclick="addStaffRow('dj-rows','DJ')">+ Agregar</button></div>
+    <div class="card-header">
+      <span class="card-title">DJs</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="dj-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addStaffRow('dj-rows','DJ')">+ Agregar</button>
+      </div>
+    </div>
     <div id="dj-rows"></div>
   </div>
-
+ 
   <div class="card">
-    <div class="card-header"><span class="card-title">Gastos adicionales</span><button class="btn btn-sm" onclick="addGastoRow()">+ Agregar</button></div>
+    <div class="card-header"><span class="card-title">Gastos adicionales / PH</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="ph-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addGastoRow()">+ Agregar</button>
+      </div>
+    </div>
     <div id="gasto-rows"></div>
   </div>
-
+ 
   <div class="card">
     <div class="card-header"><span class="card-title">Comisiones RRPP</span><button class="btn btn-sm" onclick="addComisionRow()">+ Agregar</button></div>
     <div id="comision-rows"></div>
   </div>
-
+ 
   <button class="btn btn-accent" onclick="guardarFecha()" style="width:100%;padding:12px;font-size:14px;margin-top:4px">
     Guardar fecha
   </button>
 </div>
-
+ 
 <!-- REPORTE -->
 <div id="page-reporte" class="page">
   <div class="month-bar">
@@ -402,17 +441,17 @@ body{min-height:100vh;display:flex;flex-direction:column}
   </div>
   <div id="reporte-content"></div>
 </div>
-
+ 
 </div><!-- .main -->
-
+ 
 <div id="toast" class="toast"></div>
-
+ 
 <script>
 // ============================================================
 // BASE DE DATOS (localStorage persistente)
 // ============================================================
 const STORAGE_KEY = 'malianteo_db_2026';
-
+ 
 const DEFAULT_DB = {
   fechas: [
     {id:1,fecha:'02/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:800000,notas:'',
@@ -517,7 +556,7 @@ const DEFAULT_DB = {
   ],
   boliches: []
 };
-
+ 
 function loadDB(){
   try{
     const s=localStorage.getItem(STORAGE_KEY);
@@ -528,14 +567,15 @@ function loadDB(){
 function saveDB(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }catch(e){}
 }
-
+ 
 let DB = loadDB();
-
+ 
 // ============================================================
 // UTILS
 // ============================================================
-const PERSONAS = ['Anto Fantini','Baby Cue','Bixha','Bruno publi','Eli','Fede Bugari','Fiama','Fix','Flor','Juan','Juan DJ','Lil Paper','Maga','Mati O','Mati PH','Mcrone','Mica cm','Molfe','Naccarato','Nico W','Santi N','Valen C','Vixxen','Z'];
-
+const PERSONAS = ['Anto Fantini','Baby Cue','Bixha','Bruno publi','DJ Invitado','Eli','Fede Bugari','Fiama','Fix','Flor','Juan','Juan DJ','Lil Paper','Maga','Mati O','Mati PH','Mcrone','Mica cm','Molfe','Naccarato','Nico W','Santi N','Valen C','Vixxen','Z'];
+const VENUES = ['Cruza','CHN','Porteña','Lanús','NQN','Aeropuerto','Forest'];
+ 
 function fmt(n){
   if(!n&&n!==0)return '—';
   return '$'+Math.round(n).toLocaleString('es-AR');
@@ -555,7 +595,7 @@ function totalCosto(f){return [...(f.pr||[]),...(f.dj||[]),...(f.gastos||[]),...
 function totalPendiente(f){return pendientes(f).reduce((s,p)=>s+p.monto,0)}
 function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes)}
 function nextId(){return DB.fechas.length?Math.max(...DB.fechas.map(f=>f.id))+1:1}
-
+ 
 // ============================================================
 // NAVEGACION
 // ============================================================
@@ -577,7 +617,7 @@ function showTab(btn, id){
   if(id==='t-historial') renderHistorial();
   if(id==='t-boliches') renderBoliches();
 }
-
+ 
 // ============================================================
 // DASHBOARD
 // ============================================================
@@ -589,7 +629,7 @@ function renderDashboard(){
   const balance=totalRecaudado-totalGastado;
   const rentabilidad=totalRecaudado?Math.round((balance/totalRecaudado)*100):0;
   const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0);
-
+ 
   document.getElementById('dash-metrics').innerHTML=`
     <div class="metric"><div class="metric-label">Fechas</div><div class="metric-value blue">${fechas.length}</div><div class="metric-sub">${mes}</div></div>
     <div class="metric"><div class="metric-label">Recaudado</div><div class="metric-value green">${fmt(totalRecaudado)}</div><div class="metric-sub">total del mes</div></div>
@@ -597,7 +637,7 @@ function renderDashboard(){
     <div class="metric"><div class="metric-label">Balance neto</div><div class="metric-value ${balance>=0?'green':'red'}">${fmt(balance)}</div><div class="metric-sub">${rentabilidad}% rentabilidad</div></div>
     <div class="metric"><div class="metric-label">Pendiente pago</div><div class="metric-value ${pendTotal>0?'red':'green'}">${fmt(pendTotal)}</div><div class="metric-sub">sin pagar</div></div>
   `;
-
+ 
   // pendientes
   const deudores={};
   fechas.forEach(f=>{
@@ -614,7 +654,7 @@ function renderDashboard(){
         <div class="person-sub">${deudores[k].map(d=>d.fecha).join(' · ')}</div></div>
         <div class="person-monto red">${fmt(deudores[k].reduce((s,d)=>s+d.monto,0))}</div>
       </div>`).join('');
-
+ 
   // fechas del mes
   document.getElementById('dash-fechas').innerHTML = fechas.length===0
     ? '<div class="empty">Sin fechas cargadas</div>'
@@ -630,7 +670,7 @@ function renderDashboard(){
           <div class="person-monto">${fmt(totalCosto(f))}</div>
         </div>`;
       }).join('');
-
+ 
   // bar chart gastos por fecha
   const maxG=Math.max(...fechas.map(f=>totalCosto(f)),1);
   document.getElementById('dash-chart').innerHTML = fechas.length===0
@@ -640,7 +680,7 @@ function renderDashboard(){
         <div class="bar-track"><div class="bar-fill" style="width:${Math.round((totalCosto(f)/maxG)*100)}%;background:var(--accent2)"></div></div>
         <div class="bar-val">${fmt(totalCosto(f))}</div>
       </div>`).join('');
-
+ 
   // comparativo mensual
   const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
   const mesData=meses.map(m=>({
@@ -664,7 +704,7 @@ function renderDashboard(){
           </div>
         </div>`).join('');
 }
-
+ 
 // ============================================================
 // FECHAS
 // ============================================================
@@ -682,10 +722,10 @@ function renderFechas(){
   if(evento)fechas=fechas.filter(f=>f.evento===evento);
   if(estado==='pend')fechas=fechas.filter(f=>pendientes(f).length>0);
   if(estado==='ok')fechas=fechas.filter(f=>pendientes(f).length===0);
-
+ 
   const el=document.getElementById('fechas-list');
   if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas para los filtros seleccionados</div>';return;}
-
+ 
   el.innerHTML=fechas.map(f=>{
     const np=pendientes(f).length;
     const dotCls=np===0?'fecha-dot-ok':np<3?'fecha-dot-pend':'fecha-dot-bad';
@@ -711,8 +751,25 @@ function renderFechas(){
         </div>
       </div>
       <div class="fecha-body" id="body-${f.id}">
+        ${(f.pptoPR||f.pptoDJ||f.pptoPH)?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          ${[['PR',(f.pr||[]).reduce((s,p)=>s+p.monto,0),f.pptoPR||0],
+             ['DJs',(f.dj||[]).reduce((s,p)=>s+p.monto,0),f.pptoDJ||0],
+             ['PH/Extras',(f.gastos||[]).reduce((s,p)=>s+p.monto,0),f.pptoPH||0]
+          ].map(([label,gastado,ppto])=>{
+            if(!ppto)return '';
+            const exc=gastado-ppto;
+            const excedido=exc>0;
+            return `<div style="padding:10px 12px;background:var(--bg3);border-radius:var(--radius);border:1px solid ${excedido?'var(--danger)':'var(--border)'}">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+              <div style="font-family:var(--font-mono);font-size:13px">${fmt(gastado)} <span style="color:var(--text3)">/ ${fmt(ppto)}</span></div>
+              <div style="font-size:11px;margin-top:3px;color:${excedido?'var(--danger)':'var(--success)'}">
+                ${excedido?'▲ +'+fmt(exc)+' excedido':'✓ dentro del ppto'}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`:''}
         ${f.notas?`<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Nota: ${f.notas}</p>`:''}
-        ${f.recaudado>0?`<p style="font-size:12px;color:var(--text2);margin-bottom:12px">Recaudado: <strong style="color:var(--success)">${fmt(f.recaudado)}</strong> · Presupuesto: ${fmt(f.ppto)} · Balance: <strong style="color:${f.recaudado-totalCosto(f)>=0?'var(--success)':'var(--danger)'}">${fmt(f.recaudado-totalCosto(f))}</strong></p>`:''}
+        ${f.recaudado>0?`<p style="font-size:12px;color:var(--text2);margin-bottom:12px">Recaudado: <strong style="color:var(--success)">${fmt(f.recaudado)}</strong> · Balance: <strong style="color:${f.recaudado-totalCosto(f)>=0?'var(--success)':'var(--danger)'}">${fmt(f.recaudado-totalCosto(f))}</strong></p>`:''}
         <table class="tbl">
           <thead><tr><th>Persona</th><th>Rol</th><th>Monto</th><th>Estado</th><th>Nota</th></tr></thead>
           <tbody>
@@ -754,7 +811,9 @@ function loadFechaIntoForm(f){
   document.getElementById('nf-evento').value=f.evento||'';
   document.getElementById('nf-mes').value=f.mes||'MAYO';
   document.getElementById('nf-recaudado').value=f.recaudado||0;
-  document.getElementById('nf-ppto').value=f.ppto||0;
+  document.getElementById('nf-ppto-pr').value=f.pptoPR||f.ppto||0;
+  document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
+  document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
   document.getElementById('nf-notas').value=f.notas||'';
   document.getElementById('pr-rows').innerHTML='';
   document.getElementById('dj-rows').innerHTML='';
@@ -765,8 +824,9 @@ function loadFechaIntoForm(f){
   (f.gastos||[]).forEach(p=>addGastoRow(p));
   (f.comisiones||[]).forEach(p=>addComisionRow(p));
   document.getElementById('nf-fecha').dataset.editId=f.id;
+  setTimeout(()=>{actualizarVsPpto();togglePptoSection();}, 50);
 }
-
+ 
 // ============================================================
 // PAGOS
 // ============================================================
@@ -823,7 +883,7 @@ function renderHistorial(){
     </div>`;
   }).filter(Boolean).join('');
 }
-
+ 
 // BOLICHES
 function addDeudaBoliche(){
   document.getElementById('boliches-form').style.display='block';
@@ -873,7 +933,7 @@ function toggleBoliche(id){
   b.estado=b.estado==='NP'?'P':b.estado==='P'?'parcial':'NP';
   saveDB();renderBoliches();
 }
-
+ 
 // ============================================================
 // NUEVA FECHA
 // ============================================================
@@ -891,7 +951,7 @@ function addStaffRow(containerId, tipo, data={}){
       </select>
     </div>
     <div class="form-group"><label>O escribir</label><input type="text" data-field="nombre" value="${data.nombre||''}" placeholder="Nombre libre..."></div>
-    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0"></div>
+    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0" oninput="actualizarVsPpto()"></div>
     <div class="form-group"><label>Estado</label>
       <select data-field="estado">
         <option value="P"${(data.estado||'P')==='P'?' selected':''}>Pagado</option>
@@ -948,7 +1008,7 @@ function addComisionRow(data={}){
   `;
   document.getElementById('comision-rows').appendChild(div);
 }
-
+ 
 function parseRows(containerId){
   return [...document.getElementById(containerId).querySelectorAll('.form-row')].map(row=>{
     const inputs=row.querySelectorAll('input[data-field],select[data-field]');
@@ -957,7 +1017,65 @@ function parseRows(containerId){
     return obj;
   }).filter(o=>o.nombre);
 }
-
+ 
+function togglePptoSection(){
+  const venue=document.getElementById('nf-evento').value.trim();
+  const esCruza=venue==='Cruza';
+  const sec=document.getElementById('ppto-section');
+  if(sec) sec.style.display=esCruza?'grid':'none';
+  // limpiar indicadores si no es Cruza
+  if(!esCruza){
+    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  }
+}
+ 
+// Plantillas por venue
+const PLANTILLAS = {
+  'Cruza': { pptoPR: 350000, pptoDJ: 800000, pptoPH: 1400000 }
+};
+ 
+function aplicarPlantilla(venue){
+  document.getElementById('nf-evento').value=venue;
+  togglePptoSection();
+  const p=PLANTILLAS[venue];
+  if(p){
+    document.getElementById('nf-ppto-pr').value=p.pptoPR;
+    document.getElementById('nf-ppto-dj').value=p.pptoDJ;
+    document.getElementById('nf-ppto-ph').value=p.pptoPH;
+    actualizarVsPpto();
+  } else {
+    document.getElementById('nf-ppto-pr').value='';
+    document.getElementById('nf-ppto-dj').value='';
+    document.getElementById('nf-ppto-ph').value='';
+    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  }
+  toast('Plantilla '+venue+' cargada ⚡');
+}
+ 
+function actualizarVsPpto(){
+  const pptoPR=parseFloat(document.getElementById('nf-ppto-pr').value)||0;
+  const pptoDJ=parseFloat(document.getElementById('nf-ppto-dj').value)||0;
+  const pptoPH=parseFloat(document.getElementById('nf-ppto-ph').value)||0;
+ 
+  function calcTotal(containerId){
+    return [...document.getElementById(containerId).querySelectorAll('input[data-field=monto]')]
+      .reduce((s,i)=>s+(parseFloat(i.value)||0),0);
+  }
+  function setIndicador(elId, gastado, ppto){
+    const el=document.getElementById(elId);
+    if(!el||!ppto)return;
+    const diff=gastado-ppto;
+    const excedido=diff>0;
+    el.innerHTML=`<span style="color:${excedido?'var(--danger)':'var(--success)'}">
+      ${fmt(gastado)} / ${fmt(ppto)} 
+      ${excedido?'▲ excedido '+fmt(diff):'✓ dentro del ppto'}
+    </span>`;
+  }
+  setIndicador('pr-vs-ppto', calcTotal('pr-rows'), pptoPR);
+  setIndicador('dj-vs-ppto', calcTotal('dj-rows'), pptoDJ);
+  setIndicador('ph-vs-ppto', calcTotal('gasto-rows'), pptoPH);
+}
+ 
 function guardarFecha(){
   const evento=document.getElementById('nf-evento').value.trim();
   const mes=document.getElementById('nf-mes').value;
@@ -965,20 +1083,22 @@ function guardarFecha(){
   const fechaInput=document.getElementById('nf-fecha');
   const editId=fechaInput.dataset.editId?parseInt(fechaInput.dataset.editId):null;
   const fechaStr=fechaInput.value?fechaInput.value.split('-').reverse().slice(0,2).join('/'):evento;
-
+ 
   const obj={
     id:editId||nextId(),
     fecha:fechaStr,
     mes,evento,
     recaudado:parseFloat(document.getElementById('nf-recaudado').value)||0,
-    ppto:parseFloat(document.getElementById('nf-ppto').value)||0,
+    pptoPR:parseFloat(document.getElementById('nf-ppto-pr').value)||0,
+    pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
+    pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
     notas:document.getElementById('nf-notas').value,
     pr:parseRows('pr-rows'),
     dj:parseRows('dj-rows'),
     gastos:parseRows('gasto-rows'),
     comisiones:parseRows('comision-rows')
   };
-
+ 
   if(editId){
     const idx=DB.fechas.findIndex(f=>f.id===editId);
     if(idx>=0)DB.fechas[idx]=obj;
@@ -987,11 +1107,12 @@ function guardarFecha(){
     DB.fechas.push(obj);
   }
   saveDB();
-  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto','nf-notas'].forEach(id=>document.getElementById(id).value='');
+  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas'].forEach(id=>document.getElementById(id).value='');
   ['pr-rows','dj-rows','gasto-rows','comision-rows'].forEach(id=>document.getElementById(id).innerHTML='');
+  ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   toast(editId?'Fecha actualizada ✓':'Fecha guardada ✓');
 }
-
+ 
 // ============================================================
 // REPORTE MENSUAL
 // ============================================================
@@ -1004,7 +1125,7 @@ function renderReporte(){
   const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
   const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0);
   const totalBoliches=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
-
+ 
   // deudores
   const deudores={};
   fechas.forEach(f=>{
@@ -1013,13 +1134,13 @@ function renderReporte(){
       deudores[p.nombre]+=p.monto;
     });
   });
-
+ 
   // gastos por categoria
   const totalPR=fechas.reduce((s,f)=>(s+(f.pr||[]).reduce((ss,p)=>ss+p.monto,0)),0);
   const totalDJ=fechas.reduce((s,f)=>(s+(f.dj||[]).reduce((ss,p)=>ss+p.monto,0)),0);
   const totalGastosAd=fechas.reduce((s,f)=>(s+(f.gastos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
   const totalComisiones=fechas.reduce((s,f)=>(s+(f.comisiones||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-
+ 
   document.getElementById('reporte-content').innerHTML=`
     <div class="report-section">
       <h3>Resumen ejecutivo — ${mes} 2026</h3>
@@ -1029,7 +1150,7 @@ function renderReporte(){
       <div class="report-kv"><span class="report-k">Balance neto</span><span class="report-v ${balance>=0?'green':'red'}">${fmt(balance)}</span></div>
       <div class="report-kv"><span class="report-k">Rentabilidad</span><span class="report-v yellow">${rentabilidad}%</span></div>
     </div>
-
+ 
     <div class="report-section">
       <h3>Distribución de gastos</h3>
       <div class="report-kv"><span class="report-k">PR / Promotores</span><span class="report-v">${fmt(totalPR)} <span style="color:var(--text3);font-size:11px">${pct(totalPR,totalGastado)}</span></span></div>
@@ -1037,7 +1158,7 @@ function renderReporte(){
       <div class="report-kv"><span class="report-k">Gastos adicionales</span><span class="report-v">${fmt(totalGastosAd)} <span style="color:var(--text3);font-size:11px">${pct(totalGastosAd,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalComisiones)} <span style="color:var(--text3);font-size:11px">${pct(totalComisiones,totalGastado)}</span></span></div>
     </div>
-
+ 
     <div class="report-section">
       <h3>Pagos pendientes del mes</h3>
       ${Object.keys(deudores).length===0
@@ -1049,7 +1170,7 @@ function renderReporte(){
         <span class="report-v red">${fmt(pendTotal)}</span>
       </div>
     </div>
-
+ 
     <div class="report-section">
       <h3>Deudas de boliches / venues</h3>
       ${DB.boliches.length===0
@@ -1064,7 +1185,7 @@ function renderReporte(){
         <span class="report-v red">${fmt(totalBoliches)}</span>
       </div>
     </div>
-
+ 
     <div class="report-section">
       <h3>Detalle por fecha</h3>
       ${fechas.map(f=>`
@@ -1086,11 +1207,14 @@ function renderReporte(){
     </div>
   `;
 }
-
+ 
 // ============================================================
 // INIT
 // ============================================================
 renderDashboard();
+// ocultar sección presupuesto hasta que se elija Cruza
+const _pptoSec=document.getElementById('ppto-section');
+if(_pptoSec)_pptoSec.style.display='none';
 </script>
 </body>
 </html>
