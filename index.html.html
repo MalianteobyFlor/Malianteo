@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MALIANTEO 2026 — Panel de gestión</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --border: #2a2a2a;
+  --border2: #333333;
+  --text: #f0f0f0;
+  --text2: #888888;
+  --text3: #555555;
+  --accent: #c8ff00;
+  --accent2: #ff3c6e;
+  --accent3: #00d4ff;
+  --success: #39d353;
+  --warning: #f0a500;
+  --danger: #ff3c6e;
+  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'DM Sans', sans-serif;
+  --radius: 8px;
+  --radius-lg: 14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.5}
+body{min-height:100vh;display:flex;flex-direction:column}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100}
+.logo{font-family:var(--font-mono);font-size:16px;font-weight:700;letter-spacing:2px;color:var(--accent)}
+.logo span{color:var(--text2);font-weight:400}
+.nav{display:flex;gap:2px}
+.nav-btn{background:none;border:none;font-family:var(--font-sans);font-size:13px;color:var(--text2);padding:6px 14px;border-radius:var(--radius);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.nav-btn:hover{color:var(--text);background:var(--bg3)}
+.nav-btn.active{color:var(--accent);background:var(--bg3)}
+.nav-btn svg{width:14px;height:14px;opacity:.7}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto}
+.page{display:none;padding:24px;max-width:1100px;margin:0 auto}
+.page.active{display:block}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-family:var(--font-mono);font-size:13px;letter-spacing:1px;color:var(--text2);text-transform:uppercase}
+.section-actions{display:flex;gap:8px}
+
+/* METRICS GRID */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.metric-value{font-family:var(--font-mono);font-size:24px;font-weight:700;line-height:1}
+.metric-value.green{color:var(--success)}
+.metric-value.red{color:var(--danger)}
+.metric-value.blue{color:var(--accent3)}
+.metric-value.yellow{color:var(--accent)}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:6px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:var(--text3);text-transform:uppercase}
+
+/* GRID 2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--text3);font-weight:500;font-size:11px;letter-spacing:.6px;text-transform:uppercase;padding:0 12px 10px 0;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 12px 10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.5px;padding:3px 8px;border-radius:4px;text-transform:uppercase;font-family:var(--font-mono)}
+.badge-p{background:#0d2e0d;color:var(--success);border:1px solid #1a4a1a}
+.badge-np{background:#2e0d0d;color:var(--danger);border:1px solid #4a1a1a}
+.badge-pc{background:#0d1e2e;color:var(--accent3);border:1px solid #1a2e4a}
+.badge-nt{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+/* FECHA BLOCK */
+.fecha-block{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.fecha-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--bg2);cursor:pointer;transition:background .1s;user-select:none}
+.fecha-hdr:hover{background:var(--bg3)}
+.fecha-hdr-left{display:flex;align-items:center;gap:12px}
+.fecha-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fecha-dot-ok{background:var(--success)}
+.fecha-dot-pend{background:var(--warning)}
+.fecha-dot-bad{background:var(--danger)}
+.fecha-hdr-title{font-family:var(--font-mono);font-size:13px;font-weight:700}
+.fecha-hdr-sub{font-size:12px;color:var(--text2);margin-left:4px}
+.fecha-hdr-right{display:flex;align-items:center;gap:10px}
+.fecha-hdr-monto{font-family:var(--font-mono);font-size:12px;color:var(--text2)}
+.fecha-body{display:none;padding:16px 18px;border-top:1px solid var(--border);background:var(--bg)}
+.fecha-body.open{display:block}
+
+/* PERSON ROW */
+.person-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.person-row:last-child{border-bottom:none}
+.person-name{font-size:13px;font-weight:500}
+.person-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.person-monto{font-family:var(--font-mono);font-size:13px}
+.person-monto.red{color:var(--danger)}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.form-row.cols4{grid-template-columns:1fr 1fr 1fr 1fr auto}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:9px 12px;color:var(--text);font-family:var(--font-sans);font-size:13px;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group select option{background:var(--bg3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font-sans);font-size:13px;cursor:pointer;transition:all .15s;font-weight:500}
+.btn:hover{background:var(--bg4);border-color:var(--border2)}
+.btn-accent{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.btn-accent:hover{background:#b8ef00;border-color:#b8ef00}
+.btn-danger{background:transparent;border-color:#4a1a1a;color:var(--danger)}
+.btn-danger:hover{background:#2e0d0d}
+.btn-ghost{background:transparent;border:none;padding:4px 8px;color:var(--text3)}
+.btn-ghost:hover{color:var(--danger)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-add-row{width:100%;background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:8px;border-radius:var(--radius);cursor:pointer;font-family:var(--font-sans);font-size:12px;margin-top:8px;transition:all .15s}
+.btn-add-row:hover{border-color:var(--accent);color:var(--accent)}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filters select,.filters input{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px;color:var(--text);font-family:var(--font-sans);font-size:12px;outline:none}
+.filters select:focus,.filters input:focus{border-color:var(--accent)}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.tab{background:none;border:none;font-family:var(--font-sans);font-size:13px;color:var(--text3);padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* MONTH SELECTOR */
+.month-bar{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.month-bar label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.month-bar select{background:transparent;border:none;color:var(--text);font-family:var(--font-mono);font-size:14px;font-weight:700;outline:none;cursor:pointer}
+
+/* CHART BAR */
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.bar-label{width:80px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--bg3);border-radius:3px;height:8px;position:relative}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.bar-val{width:90px;font-family:var(--font-mono);font-size:11px;color:var(--text2)}
+
+/* REPORT */
+.report-section{margin-bottom:28px}
+.report-section h3{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.report-kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.report-kv:last-child{border-bottom:none}
+.report-k{font-size:13px;color:var(--text2)}
+.report-v{font-family:var(--font-mono);font-size:13px;font-weight:700}
+.report-v.green{color:var(--success)}
+.report-v.red{color:var(--danger)}
+.report-v.yellow{color:var(--accent)}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--accent);color:#000;font-weight:700;font-size:13px;padding:12px 20px;border-radius:var(--radius);font-family:var(--font-mono);transform:translateY(80px);opacity:0;transition:all .3s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* PRINT */
+@media print{
+  .topbar,.nav,.filters,.btn,.tabs,.month-bar,.btn-add-row{display:none!important}
+  .page{display:block!important;padding:0}
+  body{background:white;color:#000}
+  .card,.fecha-block,.metric{border:1px solid #ddd;background:white}
+  .metric-value,.report-v,.fecha-hdr-title{color:#000!important}
+  .fecha-body{display:block!important}
+  .card-title,.section-title,.metric-label,.tbl th,.report-k{color:#666!important}
+  .tbl td,.person-row{border-color:#eee!important}
+}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .grid2{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .form-row.cols3,.form-row.cols4{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 12px}
+  .nav-btn span{display:none}
+  .page{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">MALIANTEO <span>// 2026</span></div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('fechas',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Fechas</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('pagos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Pagos</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('nueva',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Nueva fecha</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('reporte',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+      <span>Reporte</span>
+    </button>
+  </nav>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="month-bar">
+    <label>Mes activo:</label>
+    <select id="dash-mes" onchange="renderDashboard()">
+      <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+      <option value="MAYO" selected>Mayo</option><option value="JUNIO">Junio</option>
+      <option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option>
+      <option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option>
+      <option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option>
+    </select>
+  </div>
+  <div class="metrics" id="dash-metrics"></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><span class="card-title">Pagos pendientes</span></div>
+      <div id="dash-pendientes"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Fechas del mes</span></div>
+      <div id="dash-fechas"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Distribución de gastos por fecha</span></div>
+    <div id="dash-chart" class="bar-chart"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Comparativo mensual — recaudado vs gastado</span></div>
+    <div id="dash-comparativo" class="bar-chart"></div>
+  </div>
+</div>
+
+<!-- FECHAS -->
+<div id="page-fechas" class="page">
+  <div class="filters">
+    <select id="f-mes" onchange="renderFechas()">
+      <option value="">Todos los meses</option>
+      <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+      <option value="MAYO">Mayo</option><option value="JUNIO">Junio</option>
+    </select>
+    <select id="f-estado" onchange="renderFechas()">
+      <option value="">Todos los estados</option>
+      <option value="pend">Con pendientes</option>
+      <option value="ok">Todo pagado</option>
+    </select>
+    <select id="f-evento" onchange="renderFechas()">
+      <option value="">Todos los eventos</option>
+    </select>
+  </div>
+  <div id="fechas-list"></div>
+</div>
+
+<!-- PAGOS -->
+<div id="page-pagos" class="page">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab(this,'t-deudas')">Deudas pendientes</button>
+    <button class="tab" onclick="showTab(this,'t-historial')">Historial por persona</button>
+    <button class="tab" onclick="showTab(this,'t-boliches')">Deudas de boliches</button>
+  </div>
+  <div id="t-deudas">
+    <div id="deudas-list"></div>
+  </div>
+  <div id="t-historial" style="display:none">
+    <div class="filters">
+      <select id="f-persona" onchange="renderHistorial()"><option value="">Todas las personas</option></select>
+      <select id="f-mes-h" onchange="renderHistorial()">
+        <option value="">Todos los meses</option>
+        <option value="MAYO">Mayo</option><option value="JUNIO">Junio</option>
+      </select>
+    </div>
+    <div id="historial-list"></div>
+  </div>
+  <div id="t-boliches" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Deudas de boliches / venues</span>
+        <button class="btn btn-sm" onclick="addDeudaBoliche()">+ Agregar</button>
+      </div>
+      <div id="boliches-list"></div>
+    </div>
+    <div id="boliches-form" style="display:none" class="card">
+      <div class="card-title" style="margin-bottom:12px">Nueva deuda de boliche</div>
+      <div class="form-row">
+        <div class="form-group"><label>Boliche / Venue</label><input id="b-nombre" type="text" placeholder="Ej: Crobar, Niceto..."></div>
+        <div class="form-group"><label>Monto adeudado</label><input id="b-monto" type="number" placeholder="0"></div>
+        <div class="form-group"><label>Fecha</label><input id="b-fecha" type="text" placeholder="Ej: 07/03"></div>
+        <div class="form-group"><label>Estado</label>
+          <select id="b-estado"><option value="NP">Pendiente</option><option value="P">Pagado</option><option value="parcial">Parcial</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><label>Notas</label><input id="b-notas" type="text" placeholder="Observaciones..."></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-accent" onclick="guardarBoliche()">Guardar</button>
+        <button class="btn" onclick="document.getElementById('boliches-form').style.display='none'">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVA FECHA -->
+<div id="page-nueva" class="page">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Datos del evento</span>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text3)">Plantilla:</span>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Cruza')" style="border-color:#534AB7;color:#AFA9EC">⚡ Cruza</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('CHN')" style="border-color:#1a3a2a;color:#5aaa7a">⚡ CHN</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Porteña')" style="border-color:#3a2a1a;color:#cc8844">⚡ Porteña</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Lanús')" style="border-color:#3a1a1a;color:#cc4444">⚡ Lanús</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('NQN')" style="border-color:#1a2a3a;color:#4488cc">⚡ NQN</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Aeropuerto')" style="border-color:#2a2a1a;color:#aaaa44">⚡ Aeropuerto</button>
+        <button class="btn btn-sm" onclick="aplicarPlantilla('Forest')" style="border-color:#1a3a1a;color:#44aa44">⚡ Forest</button>
+      </div>
+    </div>
+    <div class="form-row cols3">
+      <div class="form-group"><label>Fecha</label><input type="date" id="nf-fecha"></div>
+      <div class="form-group"><label>Evento / Lugar</label>
+        <input type="text" id="nf-evento" placeholder="Ej: Cruza, CHN..." list="venues-list" oninput="togglePptoSection()">
+        <datalist id="venues-list">
+          <option value="Cruza"><option value="CHN"><option value="Porteña">
+          <option value="Lanús"><option value="NQN"><option value="Aeropuerto"><option value="Forest">
+        </datalist>
+      </div>
+      <div class="form-group"><label>Mes</label>
+        <select id="nf-mes">
+          <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+          <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+          <option value="MAYO" selected>Mayo</option><option value="JUNIO">Junio</option>
+          <option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option>
+          <option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option>
+          <option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row cols3">
+      <div class="form-group"><label>Recaudado total ($)</label><input type="number" id="nf-recaudado" placeholder="0"></div>
+      <div class="form-group"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
+    </div>
+    <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
+      <div class="form-group"><label>Presupuesto PR ($)</label><input type="number" id="nf-ppto-pr" placeholder="0" oninput="actualizarVsPpto()"></div>
+      <div class="form-group"><label>Presupuesto DJs ($)</label><input type="number" id="nf-ppto-dj" placeholder="0" oninput="actualizarVsPpto()"></div>
+      <div class="form-group"><label>Presupuesto PH ($)</label><input type="number" id="nf-ppto-ph" placeholder="0" oninput="actualizarVsPpto()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">PR / Promotores</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="pr-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addStaffRow('pr-rows','PR')">+ Agregar</button>
+      </div>
+    </div>
+    <div id="pr-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">DJs</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="dj-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addStaffRow('dj-rows','DJ')">+ Agregar</button>
+      </div>
+    </div>
+    <div id="dj-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">PH (fotógrafo / video)</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="ph-vs-ppto" style="font-size:11px"></span>
+        <button class="btn btn-sm" onclick="addPhRow()">+ Agregar</button>
+      </div>
+    </div>
+    <div id="ph-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Gastos adicionales</span>
+      <button class="btn btn-sm" onclick="addGastoRow()">+ Agregar</button>
+    </div>
+    <div id="gasto-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Comisiones RRPP</span><button class="btn btn-sm" onclick="addComisionRow()">+ Agregar</button></div>
+    <div id="comision-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Estado de pago de la fecha</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label>Estado general</label>
+        <select id="nf-estado-pago">
+          <option value="PENDIENTE">⏳ Pendiente de pago</option>
+          <option value="PARCIAL">🔶 Pago parcial</option>
+          <option value="TOTAL">✅ Pago total</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Observaciones</label>
+        <input type="text" id="nf-obs" placeholder="Ej: falta transferir DJ, adelanto enviado...">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-accent" onclick="guardarFecha()" style="width:100%;padding:12px;font-size:14px;margin-top:4px">
+    Guardar fecha
+  </button>
+</div>
+
+<!-- REPORTE -->
+<div id="page-reporte" class="page">
+  <div class="month-bar">
+    <label>Reporte de:</label>
+    <select id="rep-mes" onchange="renderReporte()">
+      <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+      <option value="MAYO" selected>Mayo</option><option value="JUNIO">Junio</option>
+      <option value="JULIO">Julio</option><option value="AGOSTO">Agosto</option>
+    </select>
+    <div style="flex:1"></div>
+    <button class="btn btn-sm" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Imprimir / PDF
+    </button>
+  </div>
+  <div id="reporte-content"></div>
+</div>
+
+</div><!-- .main -->
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ============================================================
+// BASE DE DATOS (localStorage persistente)
+// ============================================================
+const STORAGE_KEY = 'malianteo_db_2026';
+
+const DEFAULT_DB = {
+  fechas: [
+    {id:1,fecha:'02/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:800000,notas:'',
+      pr:[
+        {nombre:'Nico W',monto:100000,estado:'P',nota:''},
+        {nombre:'Maga',monto:200000,estado:'P',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
+        {nombre:'Naccarato',monto:50000,estado:'P',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
+        {nombre:'Z',monto:200000,estado:'P',nota:''},
+        {nombre:'Bixha',monto:200000,estado:'P',nota:''}
+      ],
+      gastos:[],
+      comisiones:[]
+    },
+    {id:2,fecha:'09/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
+      pr:[
+        {nombre:'Fix',monto:50000,estado:'P',nota:''},
+        {nombre:'Maga',monto:200000,estado:'P',nota:''},
+        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
+        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
+        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
+      ],
+      gastos:[
+        {nombre:'Fiama adicional',monto:237250,estado:'P'},
+        {nombre:'Fix adicional',monto:235750,estado:'P'},
+        {nombre:'Nico W adicional',monto:440000,estado:'P'},
+        {nombre:'Nacca adicional',monto:64000,estado:'P'},
+        {nombre:'Maga adicional',monto:600000,estado:'P'}
+      ],
+      comisiones:[]
+    },
+    {id:3,fecha:'16/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
+      pr:[
+        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
+        {nombre:'Fix',monto:50000,estado:'P',nota:''},
+        {nombre:'Maga',monto:200000,estado:'P',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
+        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
+        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
+      ],
+      gastos:[{nombre:'PH pago 2/6',monto:350000,estado:'P'}],
+      comisiones:[]
+    },
+    {id:4,fecha:'23/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'Chat pato 28/05',
+      pr:[
+        {nombre:'Molfe',monto:100000,estado:'P',nota:'Chat pato 28/05'},
+        {nombre:'Fix',monto:50000,estado:'P',nota:''},
+        {nombre:'Maga',monto:200000,estado:'P',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
+        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
+        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
+      ],
+      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
+      comisiones:[{nombre:'Nico W',monto:14500,estado:'P'}]
+    },
+    {id:5,fecha:'30/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
+      pr:[
+        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
+        {nombre:'Maga',monto:200000,estado:'NP',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'NP',nota:''},
+        {nombre:'Nico W',monto:100000,estado:'NP',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
+        {nombre:'Z',monto:200000,estado:'P',nota:''},
+        {nombre:'Bixha',monto:200000,estado:'P',nota:''}
+      ],
+      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
+      comisiones:[
+        {nombre:'Nico W',monto:56500,estado:'NP'},
+        {nombre:'Fiama',monto:3000,estado:'NP'}
+      ]
+    },
+    {id:6,fecha:'06/06',mes:'JUNIO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
+      pr:[
+        {nombre:'Molfe',monto:100000,estado:'NP',nota:'$50.000 adelanto'},
+        {nombre:'Fix',monto:50000,estado:'NP',nota:'Chat pato'},
+        {nombre:'Maga',monto:200000,estado:'NP',nota:''},
+        {nombre:'Fiama',monto:50000,estado:'NP',nota:''},
+        {nombre:'Nico W',monto:100000,estado:'NP',nota:''}
+      ],
+      dj:[
+        {nombre:'Mcrone',monto:600000,estado:'P',nota:''},
+        {nombre:'Vixxen',monto:200000,estado:'P',nota:''}
+      ],
+      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
+      comisiones:[]
+    }
+  ],
+  boliches: []
+};
+
+function loadDB(){
+  try{
+    const s=localStorage.getItem(STORAGE_KEY);
+    if(s) return JSON.parse(s);
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_DB));
+}
+function saveDB(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }catch(e){}
+}
+
+let DB = loadDB();
+
+// ============================================================
+// UTILS
+// ============================================================
+const PERSONAS = ['Anto Fantini','Baby Cue','Bixha','Bruno publi','DJ Invitado','Eli','Fede Bugari','Fiama','Fix','Flor','Juan','Juan DJ','Lil Paper','Maga','Mati O','Mati PH','Mcrone','Mica cm','Molfe','Naccarato','Nico W','Santi N','Valen C','Vixxen','Z'];
+const VENUES = ['Cruza','CHN','Porteña','Lanús','NQN','Aeropuerto','Forest'];
+
+function fmt(n){
+  if(!n&&n!==0)return '—';
+  return '$'+Math.round(n).toLocaleString('es-AR');
+}
+function pct(a,b){
+  if(!b)return '—';
+  return Math.round((a/b)*100)+'%';
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function allStaff(f){return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.comisiones||[])]}
+function pendientes(f){return allStaff(f).filter(p=>p.estado==='NP')}
+function totalCosto(f){return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.comisiones||[])].reduce((s,p)=>s+p.monto,0)}
+function totalPendiente(f){return pendientes(f).reduce((s,p)=>s+p.monto,0)}
+function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes)}
+function nextId(){return DB.fechas.length?Math.max(...DB.fechas.map(f=>f.id))+1:1}
+
+// ============================================================
+// NAVEGACION
+// ============================================================
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='fechas'){populateEventoFilter();renderFechas();}
+  if(id==='pagos'){renderDeudas();populatePersonaSelect();renderBoliches();}
+  if(id==='reporte') renderReporte();
+}
+function showTab(btn, id){
+  document.querySelectorAll('#page-pagos .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#t-deudas,#t-historial,#t-boliches').forEach(t=>t.style.display='none');
+  btn.classList.add('active');
+  document.getElementById(id).style.display='block';
+  if(id==='t-historial') renderHistorial();
+  if(id==='t-boliches') renderBoliches();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard(){
+  const mes=document.getElementById('dash-mes').value;
+  const fechas=getFechasByMes(mes);
+  const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
+  const totalGastado=fechas.reduce((s,f)=>s+totalCosto(f),0);
+  const balance=totalRecaudado-totalGastado;
+  const rentabilidad=totalRecaudado?Math.round((balance/totalRecaudado)*100):0;
+  const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0);
+
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Fechas</div><div class="metric-value blue">${fechas.length}</div><div class="metric-sub">${mes}</div></div>
+    <div class="metric"><div class="metric-label">Recaudado</div><div class="metric-value green">${fmt(totalRecaudado)}</div><div class="metric-sub">total del mes</div></div>
+    <div class="metric"><div class="metric-label">Gastado</div><div class="metric-value red">${fmt(totalGastado)}</div><div class="metric-sub">staff + extras</div></div>
+    <div class="metric"><div class="metric-label">Balance neto</div><div class="metric-value ${balance>=0?'green':'red'}">${fmt(balance)}</div><div class="metric-sub">${rentabilidad}% rentabilidad</div></div>
+    <div class="metric"><div class="metric-label">Pendiente pago</div><div class="metric-value ${pendTotal>0?'red':'green'}">${fmt(pendTotal)}</div><div class="metric-sub">sin pagar</div></div>
+  `;
+
+  // pendientes
+  const deudores={};
+  fechas.forEach(f=>{
+    pendientes(f).forEach(p=>{
+      if(!deudores[p.nombre])deudores[p.nombre]=[];
+      deudores[p.nombre].push({fecha:f.fecha,monto:p.monto});
+    });
+  });
+  const dk=Object.keys(deudores);
+  document.getElementById('dash-pendientes').innerHTML = dk.length===0
+    ? '<div class="empty">Sin pendientes este mes ✓</div>'
+    : dk.map(k=>`<div class="person-row">
+        <div><div class="person-name">${k}</div>
+        <div class="person-sub">${deudores[k].map(d=>d.fecha).join(' · ')}</div></div>
+        <div class="person-monto red">${fmt(deudores[k].reduce((s,d)=>s+d.monto,0))}</div>
+      </div>`).join('');
+
+  // fechas del mes
+  document.getElementById('dash-fechas').innerHTML = fechas.length===0
+    ? '<div class="empty">Sin fechas cargadas</div>'
+    : fechas.map(f=>{
+        const np=pendientes(f).length;
+        const dotCls=np===0?'fecha-dot-ok':np<3?'fecha-dot-pend':'fecha-dot-bad';
+        return `<div class="person-row">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="fecha-dot ${dotCls}"></span>
+            <div><div class="person-name">${f.fecha} — ${f.evento}</div>
+            <div class="person-sub">${(f.pr||[]).length} PR · ${(f.dj||[]).length} DJs${np>0?' · '+np+' pend.':''}</div></div>
+          </div>
+          <div class="person-monto">${fmt(totalCosto(f))}</div>
+        </div>`;
+      }).join('');
+
+  // bar chart gastos por fecha
+  const maxG=Math.max(...fechas.map(f=>totalCosto(f)),1);
+  document.getElementById('dash-chart').innerHTML = fechas.length===0
+    ? '<div class="empty">Sin datos</div>'
+    : fechas.map(f=>`<div class="bar-row">
+        <div class="bar-label">${f.fecha}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((totalCosto(f)/maxG)*100)}%;background:var(--accent2)"></div></div>
+        <div class="bar-val">${fmt(totalCosto(f))}</div>
+      </div>`).join('');
+
+  // comparativo mensual
+  const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  const mesData=meses.map(m=>({
+    mes:m.slice(0,3),
+    rec:getFechasByMes(m).reduce((s,f)=>s+f.recaudado,0),
+    gas:getFechasByMes(m).reduce((s,f)=>s+totalCosto(f),0)
+  })).filter(d=>d.rec>0||d.gas>0);
+  const maxC=Math.max(...mesData.map(d=>Math.max(d.rec,d.gas)),1);
+  document.getElementById('dash-comparativo').innerHTML = mesData.length===0
+    ? '<div class="empty">Sin datos de recaudación cargados aún</div>'
+    : mesData.map(d=>`
+        <div class="bar-row">
+          <div class="bar-label">${d.mes}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div class="bar-track" style="height:6px"><div class="bar-fill" style="width:${Math.round((d.rec/maxC)*100)}%;background:var(--success)"></div></div>
+            <div class="bar-track" style="height:6px"><div class="bar-fill" style="width:${Math.round((d.gas/maxC)*100)}%;background:var(--danger)"></div></div>
+          </div>
+          <div class="bar-val" style="font-size:10px;line-height:1.6">
+            <span style="color:var(--success)">${fmt(d.rec)}</span><br>
+            <span style="color:var(--danger)">${fmt(d.gas)}</span>
+          </div>
+        </div>`).join('');
+}
+
+// ============================================================
+// FECHAS
+// ============================================================
+function populateEventoFilter(){
+  const eventos=[...new Set(DB.fechas.map(f=>f.evento))].sort();
+  const sel=document.getElementById('f-evento');
+  sel.innerHTML='<option value="">Todos los eventos</option>'+eventos.map(e=>`<option value="${e}">${e}</option>`).join('');
+}
+function renderFechas(){
+  const mes=document.getElementById('f-mes').value;
+  const estado=document.getElementById('f-estado').value;
+  const evento=document.getElementById('f-evento').value;
+  let fechas=DB.fechas;
+  if(mes)fechas=fechas.filter(f=>f.mes===mes);
+  if(evento)fechas=fechas.filter(f=>f.evento===evento);
+  if(estado==='pend')fechas=fechas.filter(f=>pendientes(f).length>0);
+  if(estado==='ok')fechas=fechas.filter(f=>pendientes(f).length===0);
+
+  const el=document.getElementById('fechas-list');
+  if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas para los filtros seleccionados</div>';return;}
+
+  el.innerHTML=fechas.map(f=>{
+    const np=pendientes(f).length;
+    const dotCls=np===0?'fecha-dot-ok':np<3?'fecha-dot-pend':'fecha-dot-bad';
+    const staffRows=[
+      ...(f.pr||[]).map(p=>({...p,tipo:'PR'})),
+      ...(f.dj||[]).map(p=>({...p,tipo:'DJ'})),
+      ...(f.ph||[]).map(p=>({...p,tipo:'PH'})),
+      ...(f.gastos||[]).map(p=>({...p,tipo:'Gasto adicional'})),
+      ...(f.comisiones||[]).map(p=>({...p,tipo:'Comisión'}))
+    ];
+    const estadoPagoBadge={
+      'TOTAL':'<span class="badge badge-p">✅ Pago total</span>',
+      'PARCIAL':'<span class="badge badge-pc">🔶 Pago parcial</span>',
+      'PENDIENTE':'<span class="badge badge-np">⏳ Pendiente</span>'
+    };
+    return `<div class="fecha-block">
+      <div class="fecha-hdr" onclick="toggleFecha(${f.id})">
+        <div class="fecha-hdr-left">
+          <span class="fecha-dot ${dotCls}"></span>
+          <span class="fecha-hdr-title">${f.fecha}</span>
+          <span class="fecha-hdr-sub">— ${f.evento} · ${f.mes}</span>
+        </div>
+        <div class="fecha-hdr-right">
+          ${f.recaudado>0?`<span style="font-size:11px;color:var(--success)">Rec: ${fmt(f.recaudado)}</span>`:''}
+          <span class="fecha-hdr-monto">${fmt(totalCosto(f))}</span>
+          ${estadoPagoBadge[f.estadoPago||'PENDIENTE']||''}
+          ${np>0?`<span class="badge badge-np">${np} pend.</span>`:''}
+          <svg id="chev-${f.id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="fecha-body" id="body-${f.id}">
+        ${(f.pptoPR||f.pptoDJ||f.pptoPH)?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+          ${[['PR',(f.pr||[]).reduce((s,p)=>s+p.monto,0),f.pptoPR||0],
+             ['DJs',(f.dj||[]).reduce((s,p)=>s+p.monto,0),f.pptoDJ||0],
+             ['PH/Extras',(f.gastos||[]).reduce((s,p)=>s+p.monto,0),f.pptoPH||0]
+          ].map(([label,gastado,ppto])=>{
+            if(!ppto)return '';
+            const exc=gastado-ppto;
+            const excedido=exc>0;
+            return `<div style="padding:10px 12px;background:var(--bg3);border-radius:var(--radius);border:1px solid ${excedido?'var(--danger)':'var(--border)'}">
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+              <div style="font-family:var(--font-mono);font-size:13px">${fmt(gastado)} <span style="color:var(--text3)">/ ${fmt(ppto)}</span></div>
+              <div style="font-size:11px;margin-top:3px;color:${excedido?'var(--danger)':'var(--success)'}">
+                ${excedido?'▲ +'+fmt(exc)+' excedido':'✓ dentro del ppto'}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`:''}
+        ${f.observaciones?`<div style="margin-bottom:12px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius);border-left:3px solid var(--warning);font-size:12px;color:var(--text2)">📝 ${f.observaciones}</div>`:''}
+        ${f.notas?`<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Nota: ${f.notas}</p>`:''}
+        ${f.recaudado>0?`<p style="font-size:12px;color:var(--text2);margin-bottom:12px">Recaudado: <strong style="color:var(--success)">${fmt(f.recaudado)}</strong> · Balance: <strong style="color:${f.recaudado-totalCosto(f)>=0?'var(--success)':'var(--danger)'}">${fmt(f.recaudado-totalCosto(f))}</strong></p>`:''}
+        <table class="tbl">
+          <thead><tr><th>Persona</th><th>Rol</th><th>Monto</th><th>Estado</th><th>Nota</th></tr></thead>
+          <tbody>
+            ${staffRows.map(s=>{
+              const bc={'P':'badge-p','NP':'badge-np','PC':'badge-pc'};
+              return `<tr>
+                <td>${s.nombre}</td>
+                <td style="color:var(--text3)">${s.tipo}</td>
+                <td style="font-family:var(--font-mono)">${fmt(s.monto)}</td>
+                <td><span class="badge ${bc[s.estado]||'badge-nt'}">${s.estado}</span></td>
+                <td style="color:var(--text3);font-size:12px">${s.nota||''}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="editFecha(${f.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="eliminarFecha(${f.id})">Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleFecha(id){
+  const body=document.getElementById('body-'+id);
+  const chev=document.getElementById('chev-'+id);
+  const open=body.classList.toggle('open');
+  chev.style.transform=open?'rotate(180deg)':'';
+}
+function eliminarFecha(id){
+  if(!confirm('¿Eliminar esta fecha?'))return;
+  DB.fechas=DB.fechas.filter(f=>f.id!==id);
+  saveDB();renderFechas();toast('Fecha eliminada');
+}
+function editFecha(id){
+  const f=DB.fechas.find(x=>x.id===id);
+  if(!f)return;
+  showPage('nueva',document.querySelectorAll('.nav-btn')[3]);
+  setTimeout(()=>loadFechaIntoForm(f),50);
+}
+function loadFechaIntoForm(f){
+  document.getElementById('nf-evento').value=f.evento||'';
+  document.getElementById('nf-mes').value=f.mes||'MAYO';
+  document.getElementById('nf-recaudado').value=f.recaudado||0;
+  document.getElementById('nf-ppto-pr').value=f.pptoPR||f.ppto||0;
+  document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
+  document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
+  document.getElementById('nf-notas').value=f.notas||'';
+  document.getElementById('nf-estado-pago').value=f.estadoPago||'PENDIENTE';
+  document.getElementById('nf-obs').value=f.observaciones||'';
+  document.getElementById('pr-rows').innerHTML='';
+  document.getElementById('dj-rows').innerHTML='';
+  document.getElementById('ph-rows').innerHTML='';
+  document.getElementById('gasto-rows').innerHTML='';
+  document.getElementById('comision-rows').innerHTML='';
+  (f.pr||[]).forEach(p=>addStaffRow('pr-rows','PR',p));
+  (f.dj||[]).forEach(p=>addStaffRow('dj-rows','DJ',p));
+  (f.ph||[]).forEach(p=>addPhRow(p));
+  (f.gastos||[]).forEach(p=>addGastoRow(p));
+  (f.comisiones||[]).forEach(p=>addComisionRow(p));
+  document.getElementById('nf-fecha').dataset.editId=f.id;
+  setTimeout(()=>{actualizarVsPpto();togglePptoSection();}, 50);
+}
+
+// ============================================================
+// PAGOS
+// ============================================================
+function renderDeudas(){
+  const deudores={};
+  DB.fechas.forEach(f=>{
+    pendientes(f).forEach(p=>{
+      if(!deudores[p.nombre])deudores[p.nombre]=[];
+      deudores[p.nombre].push({fecha:f.fecha,mes:f.mes,monto:p.monto,tipo:p.tipo||'staff'});
+    });
+  });
+  const el=document.getElementById('deudas-list');
+  const keys=Object.keys(deudores).sort();
+  if(!keys.length){el.innerHTML='<div class="empty">Sin pagos pendientes 🎉</div>';return;}
+  el.innerHTML=`<div class="card"><table class="tbl">
+    <thead><tr><th>Persona</th><th>Detalle</th><th>Total adeudado</th></tr></thead>
+    <tbody>${keys.map(k=>`<tr>
+      <td style="font-weight:500">${k}</td>
+      <td style="color:var(--text3);font-size:12px">${deudores[k].map(d=>`${d.fecha} ${d.mes}: ${fmt(d.monto)}`).join('<br>')}</td>
+      <td style="font-family:var(--font-mono);color:var(--danger)">${fmt(deudores[k].reduce((s,d)=>s+d.monto,0))}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function populatePersonaSelect(){
+  const personas=new Set(DB.fechas.flatMap(f=>[...allStaff(f).map(p=>p.nombre)]));
+  const sel=document.getElementById('f-persona');
+  sel.innerHTML='<option value="">Todas las personas</option>'+[...personas].sort().map(p=>`<option value="${p}">${p}</option>`).join('');
+}
+function renderHistorial(){
+  const persona=document.getElementById('f-persona').value;
+  const mes=document.getElementById('f-mes-h').value;
+  let fechas=DB.fechas;
+  if(mes)fechas=fechas.filter(f=>f.mes===mes);
+  if(persona)fechas=fechas.filter(f=>allStaff(f).some(p=>p.nombre===persona));
+  const el=document.getElementById('historial-list');
+  if(!fechas.length){el.innerHTML='<div class="empty">Sin registros</div>';return;}
+  const badgeCls={'P':'badge-p','NP':'badge-np','PC':'badge-pc'};
+  el.innerHTML=fechas.map(f=>{
+    const rows=allStaff(f).filter(p=>!persona||p.nombre===persona);
+    if(!rows.length)return '';
+    return `<div class="fecha-block" style="margin-bottom:10px">
+      <div class="fecha-hdr" style="cursor:default">
+        <div class="fecha-hdr-left"><span class="fecha-hdr-title">${f.fecha}</span><span class="fecha-hdr-sub">— ${f.evento} · ${f.mes}</span></div>
+      </div>
+      <div style="padding:0 18px">
+        ${rows.map(p=>`<div class="person-row">
+          <div><div class="person-name">${p.nombre}</div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge ${badgeCls[p.estado]||'badge-nt'}">${p.estado}</span>
+            <span style="font-family:var(--font-mono);font-size:13px">${fmt(p.monto)}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+// BOLICHES
+function addDeudaBoliche(){
+  document.getElementById('boliches-form').style.display='block';
+}
+function guardarBoliche(){
+  const b={
+    id:Date.now(),
+    nombre:document.getElementById('b-nombre').value,
+    monto:parseFloat(document.getElementById('b-monto').value)||0,
+    fecha:document.getElementById('b-fecha').value,
+    estado:document.getElementById('b-estado').value,
+    notas:document.getElementById('b-notas').value
+  };
+  if(!b.nombre){alert('Ingresá el nombre del boliche');return;}
+  DB.boliches.push(b);
+  saveDB();
+  document.getElementById('boliches-form').style.display='none';
+  ['b-nombre','b-monto','b-fecha','b-notas'].forEach(id=>document.getElementById(id).value='');
+  renderBoliches();
+  toast('Deuda guardada');
+}
+function renderBoliches(){
+  const el=document.getElementById('boliches-list');
+  if(!el)return;
+  if(!DB.boliches.length){el.innerHTML='<div class="empty">Sin deudas de boliches cargadas</div>';return;}
+  const badgeCls={'P':'badge-p','NP':'badge-np','parcial':'badge-pc'};
+  const total=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
+  el.innerHTML=`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);display:flex;justify-content:space-between">
+    <span style="font-size:12px;color:var(--text3)">Total deuda boliches</span>
+    <span style="font-family:var(--font-mono);color:var(--danger)">${fmt(total)}</span>
+  </div>`+
+  DB.boliches.map(b=>`<div class="person-row">
+    <div>
+      <div class="person-name">${b.nombre} <span style="color:var(--text3);font-size:11px">${b.fecha}</span></div>
+      ${b.notas?`<div class="person-sub">${b.notas}</div>`:''}
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="badge ${badgeCls[b.estado]||'badge-nt'}">${b.estado}</span>
+      <span style="font-family:var(--font-mono)">${fmt(b.monto)}</span>
+      <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Cambiar estado</button>
+    </div>
+  </div>`).join('');
+}
+function toggleBoliche(id){
+  const b=DB.boliches.find(x=>x.id===id);
+  if(!b)return;
+  b.estado=b.estado==='NP'?'P':b.estado==='P'?'parcial':'NP';
+  saveDB();renderBoliches();
+}
+
+// ============================================================
+// NUEVA FECHA
+// ============================================================
+function personaOpts(sel=''){
+  return `<option value="">Persona...</option>`+PERSONAS.map(p=>`<option value="${p}"${p===sel?' selected':''}>${p}</option>`).join('');
+}
+function addStaffRow(containerId, tipo, data={}){
+  const div=document.createElement('div');
+  div.className='form-row cols4';
+  div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div class="form-group"><label>${tipo}</label>
+      <select onchange="this.closest('.form-row').querySelector('input[data-field=nombre]').value=this.value">
+        ${personaOpts(data.nombre||'')}
+      </select>
+    </div>
+    <div class="form-group"><label>O escribir</label><input type="text" data-field="nombre" value="${data.nombre||''}" placeholder="Nombre libre..."></div>
+    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0" oninput="actualizarVsPpto()"></div>
+    <div class="form-group"><label>Estado</label>
+      <select data-field="estado">
+        <option value="P"${(data.estado||'P')==='P'?' selected':''}>Pagado</option>
+        <option value="NP"${data.estado==='NP'?' selected':''}>Pendiente</option>
+        <option value="PC"${data.estado==='PC'?' selected':''}>Paga Cruza</option>
+      </select>
+    </div>
+    <div class="form-group"><label>&nbsp;</label>
+      <button type="button" class="btn btn-danger btn-sm" style="margin-top:0" onclick="this.closest('.form-row').remove()">✕</button>
+    </div>
+  `;
+  document.getElementById(containerId).appendChild(div);
+}
+function addPhRow(data={}){
+  const div=document.createElement('div');
+  div.className='form-row cols4';
+  div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div class="form-group"><label>PH</label>
+      <select onchange="this.closest('.form-row').querySelector('input[data-field=nombre]').value=this.value">
+        ${personaOpts(data.nombre||'')}
+      </select>
+    </div>
+    <div class="form-group"><label>O escribir</label><input type="text" data-field="nombre" value="${data.nombre||''}" placeholder="Nombre libre..."></div>
+    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0" oninput="actualizarVsPpto()"></div>
+    <div class="form-group"><label>Estado</label>
+      <select data-field="estado">
+        <option value="P"${(data.estado||'P')==='P'?' selected':''}>Pagado</option>
+        <option value="NP"${data.estado==='NP'?' selected':''}>Pendiente</option>
+      </select>
+    </div>
+    <div class="form-group"><label>&nbsp;</label>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-row').remove()">✕</button>
+    </div>
+  `;
+  document.getElementById('ph-rows').appendChild(div);
+}
+  const div=document.createElement('div');
+  div.className='form-row cols4';
+  div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div class="form-group" style="grid-column:span 2"><label>Descripción</label><input type="text" data-field="nombre" value="${data.nombre||''}" placeholder="Ej: PH, rider, etc..."></div>
+    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0"></div>
+    <div class="form-group"><label>Estado</label>
+      <select data-field="estado">
+        <option value="P"${(data.estado||'P')==='P'?' selected':''}>Pagado</option>
+        <option value="NP"${data.estado==='NP'?' selected':''}>Pendiente</option>
+      </select>
+    </div>
+    <div class="form-group"><label>&nbsp;</label>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-row').remove()">✕</button>
+    </div>
+  `;
+  document.getElementById('gasto-rows').appendChild(div);
+}
+function addComisionRow(data={}){
+  const div=document.createElement('div');
+  div.className='form-row cols4';
+  div.style.marginBottom='8px';
+  div.innerHTML=`
+    <div class="form-group"><label>Persona</label>
+      <select onchange="this.closest('.form-row').querySelector('input[data-field=nombre]').value=this.value">
+        ${personaOpts(data.nombre||'')}
+      </select>
+    </div>
+    <div class="form-group"><label>O escribir</label><input type="text" data-field="nombre" value="${data.nombre||''}" placeholder="Nombre libre..."></div>
+    <div class="form-group"><label>Comisión</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0"></div>
+    <div class="form-group"><label>Estado</label>
+      <select data-field="estado">
+        <option value="P"${(data.estado||'P')==='P'?' selected':''}>Pagado</option>
+        <option value="NP"${data.estado==='NP'?' selected':''}>Pendiente</option>
+      </select>
+    </div>
+    <div class="form-group"><label>&nbsp;</label>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-row').remove()">✕</button>
+    </div>
+  `;
+  document.getElementById('comision-rows').appendChild(div);
+}
+
+function parseRows(containerId){
+  return [...document.getElementById(containerId).querySelectorAll('.form-row')].map(row=>{
+    const inputs=row.querySelectorAll('input[data-field],select[data-field]');
+    const obj={};
+    inputs.forEach(i=>{obj[i.dataset.field]=i.type==='number'?parseFloat(i.value)||0:i.value});
+    return obj;
+  }).filter(o=>o.nombre);
+}
+
+function togglePptoSection(){
+  const venue=document.getElementById('nf-evento').value.trim();
+  const esCruza=venue==='Cruza';
+  const sec=document.getElementById('ppto-section');
+  if(sec) sec.style.display=esCruza?'grid':'none';
+  // limpiar indicadores si no es Cruza
+  if(!esCruza){
+    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  }
+}
+
+// Plantillas por venue
+const PLANTILLAS = {
+  'Cruza': { pptoPR: 350000, pptoDJ: 800000, pptoPH: 1400000 }
+};
+
+function aplicarPlantilla(venue){
+  document.getElementById('nf-evento').value=venue;
+  togglePptoSection();
+  const p=PLANTILLAS[venue];
+  if(p){
+    document.getElementById('nf-ppto-pr').value=p.pptoPR;
+    document.getElementById('nf-ppto-dj').value=p.pptoDJ;
+    document.getElementById('nf-ppto-ph').value=p.pptoPH;
+    actualizarVsPpto();
+  } else {
+    document.getElementById('nf-ppto-pr').value='';
+    document.getElementById('nf-ppto-dj').value='';
+    document.getElementById('nf-ppto-ph').value='';
+    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  }
+  toast('Plantilla '+venue+' cargada ⚡');
+}
+
+function actualizarVsPpto(){
+  const pptoPR=parseFloat(document.getElementById('nf-ppto-pr').value)||0;
+  const pptoDJ=parseFloat(document.getElementById('nf-ppto-dj').value)||0;
+  const pptoPH=parseFloat(document.getElementById('nf-ppto-ph').value)||0;
+
+  function calcTotal(containerId){
+    return [...document.getElementById(containerId).querySelectorAll('input[data-field=monto]')]
+      .reduce((s,i)=>s+(parseFloat(i.value)||0),0);
+  }
+  function setIndicador(elId, gastado, ppto){
+    const el=document.getElementById(elId);
+    if(!el||!ppto)return;
+    const diff=gastado-ppto;
+    const excedido=diff>0;
+    el.innerHTML=`<span style="color:${excedido?'var(--danger)':'var(--success)'}">
+      ${fmt(gastado)} / ${fmt(ppto)} 
+      ${excedido?'▲ excedido '+fmt(diff):'✓ dentro del ppto'}
+    </span>`;
+  }
+  setIndicador('pr-vs-ppto', calcTotal('pr-rows'), pptoPR);
+  setIndicador('dj-vs-ppto', calcTotal('dj-rows'), pptoDJ);
+  setIndicador('ph-vs-ppto', calcTotal('ph-rows'), pptoPH);
+}
+
+function guardarFecha(){
+  const evento=document.getElementById('nf-evento').value.trim();
+  const mes=document.getElementById('nf-mes').value;
+  if(!evento){alert('Ingresá el nombre del evento');return;}
+  const fechaInput=document.getElementById('nf-fecha');
+  const editId=fechaInput.dataset.editId?parseInt(fechaInput.dataset.editId):null;
+  const fechaStr=fechaInput.value?fechaInput.value.split('-').reverse().slice(0,2).join('/'):evento;
+
+  const obj={
+    id:editId||nextId(),
+    fecha:fechaStr,
+    mes,evento,
+    recaudado:parseFloat(document.getElementById('nf-recaudado').value)||0,
+    pptoPR:parseFloat(document.getElementById('nf-ppto-pr').value)||0,
+    pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
+    pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
+    notas:document.getElementById('nf-notas').value,
+    estadoPago:document.getElementById('nf-estado-pago').value,
+    observaciones:document.getElementById('nf-obs').value,
+    pr:parseRows('pr-rows'),
+    dj:parseRows('dj-rows'),
+    ph:parseRows('ph-rows'),
+    gastos:parseRows('gasto-rows'),
+    comisiones:parseRows('comision-rows')
+  };
+
+  if(editId){
+    const idx=DB.fechas.findIndex(f=>f.id===editId);
+    if(idx>=0)DB.fechas[idx]=obj;
+    delete fechaInput.dataset.editId;
+  } else {
+    DB.fechas.push(obj);
+  }
+  saveDB();
+  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas','nf-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nf-estado-pago').value='PENDIENTE';
+  ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows'].forEach(id=>document.getElementById(id).innerHTML='');
+  ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  toast(editId?'Fecha actualizada ✓':'Fecha guardada ✓');
+}
+
+// ============================================================
+// REPORTE MENSUAL
+// ============================================================
+function renderReporte(){
+  const mes=document.getElementById('rep-mes').value;
+  const fechas=getFechasByMes(mes);
+  const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
+  const totalGastado=fechas.reduce((s,f)=>s+totalCosto(f),0);
+  const balance=totalRecaudado-totalGastado;
+  const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
+  const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0);
+  const totalBoliches=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
+
+  // deudores
+  const deudores={};
+  fechas.forEach(f=>{
+    pendientes(f).forEach(p=>{
+      if(!deudores[p.nombre])deudores[p.nombre]=0;
+      deudores[p.nombre]+=p.monto;
+    });
+  });
+
+  // gastos por categoria
+  const totalPR=fechas.reduce((s,f)=>(s+(f.pr||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalDJ=fechas.reduce((s,f)=>(s+(f.dj||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPH=fechas.reduce((s,f)=>(s+(f.ph||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalGastosAd=fechas.reduce((s,f)=>(s+(f.gastos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalComisiones=fechas.reduce((s,f)=>(s+(f.comisiones||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+
+  document.getElementById('reporte-content').innerHTML=`
+    <div class="report-section">
+      <h3>Resumen ejecutivo — ${mes} 2026</h3>
+      <div class="report-kv"><span class="report-k">Cantidad de fechas</span><span class="report-v">${fechas.length}</span></div>
+      <div class="report-kv"><span class="report-k">Ingresos totales (recaudado)</span><span class="report-v green">${fmt(totalRecaudado)}</span></div>
+      <div class="report-kv"><span class="report-k">Gastos totales en fechas</span><span class="report-v red">${fmt(totalGastado)}</span></div>
+      <div class="report-kv"><span class="report-k">Balance neto</span><span class="report-v ${balance>=0?'green':'red'}">${fmt(balance)}</span></div>
+      <div class="report-kv"><span class="report-k">Rentabilidad</span><span class="report-v yellow">${rentabilidad}%</span></div>
+    </div>
+
+    <div class="report-section">
+      <h3>Distribución de gastos</h3>
+      <div class="report-kv"><span class="report-k">PR / Promotores</span><span class="report-v">${fmt(totalPR)} <span style="color:var(--text3);font-size:11px">${pct(totalPR,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">DJs</span><span class="report-v">${fmt(totalDJ)} <span style="color:var(--text3);font-size:11px">${pct(totalDJ,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">PH</span><span class="report-v">${fmt(totalPH)} <span style="color:var(--text3);font-size:11px">${pct(totalPH,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Gastos adicionales</span><span class="report-v">${fmt(totalGastosAd)} <span style="color:var(--text3);font-size:11px">${pct(totalGastosAd,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalComisiones)} <span style="color:var(--text3);font-size:11px">${pct(totalComisiones,totalGastado)}</span></span></div>
+    </div>
+
+    <div class="report-section">
+      <h3>Pagos pendientes del mes</h3>
+      ${Object.keys(deudores).length===0
+        ? '<div class="empty" style="padding:12px">Sin pendientes ✓</div>'
+        : Object.keys(deudores).map(k=>`<div class="report-kv"><span class="report-k">${k}</span><span class="report-v red">${fmt(deudores[k])}</span></div>`).join('')
+      }
+      <div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+        <span class="report-k" style="font-weight:600">Total pendiente staff</span>
+        <span class="report-v red">${fmt(pendTotal)}</span>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>Deudas de boliches / venues</h3>
+      ${DB.boliches.length===0
+        ? '<div class="empty" style="padding:12px">Sin deudas cargadas</div>'
+        : DB.boliches.map(b=>`<div class="report-kv">
+            <span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span>
+            <span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} — ${b.estado}</span>
+          </div>`).join('')
+      }
+      <div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+        <span class="report-k" style="font-weight:600">Total deuda boliches</span>
+        <span class="report-v red">${fmt(totalBoliches)}</span>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>Detalle por fecha</h3>
+      ${fechas.map(f=>`
+        <div style="margin-bottom:16px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <strong style="font-family:var(--font-mono)">${f.fecha} — ${f.evento}</strong>
+            <span style="font-size:12px;color:var(--text2)">Total: ${fmt(totalCosto(f))}${f.recaudado>0?' · Rec: '+fmt(f.recaudado):''}</span>
+          </div>
+          ${[
+            ...(f.pr||[]).map(p=>({...p,tipo:'PR'})),
+            ...(f.dj||[]).map(p=>({...p,tipo:'DJ'})),
+            ...(f.gastos||[]).map(p=>({...p,tipo:'Gasto'})),
+            ...(f.comisiones||[]).map(p=>({...p,tipo:'Comisión'}))
+          ].map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.nombre} <span style="color:var(--text3)">(${p.tipo})</span></span>
+            <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
+          </div>`).join('')}
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderDashboard();
+// ocultar sección presupuesto hasta que se elija Cruza
+const _pptoSec=document.getElementById('ppto-section');
+if(_pptoSec)_pptoSec.style.display='none';
+</script>
+</body>
+</html>
