@@ -372,6 +372,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
     </div>
     <div class="form-row cols3">
       <div class="form-group"><label>Recaudado total ($)</label><input type="number" id="nf-recaudado" placeholder="0"></div>
+      <div class="form-group"><label>Estado de pago de lo recaudado</label>
+        <select id="nf-estado-recaudado">
+          <option value="ADEUDA">🔴 Adeuda</option>
+          <option value="PARCIAL">🔶 Parcialmente pagado</option>
+          <option value="PAGADO">✅ Pagado</option>
+        </select>
+      </div>
       <div class="form-group"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
     </div>
     <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
@@ -847,6 +854,7 @@ function loadFechaIntoForm(f){
   document.getElementById('nf-evento').value=f.evento||'';
   document.getElementById('nf-mes').value=f.mes||'MAYO';
   document.getElementById('nf-recaudado').value=f.recaudado||0;
+  document.getElementById('nf-estado-recaudado').value=f.estadoRecaudado||'ADEUDA';
   document.getElementById('nf-ppto-pr').value=f.pptoPR||f.ppto||0;
   document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
   document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
@@ -1029,6 +1037,7 @@ function addPhRow(data={}){
   `;
   document.getElementById('ph-rows').appendChild(div);
 }
+function addGastoRow(data={}){
   const div=document.createElement('div');
   div.className='form-row cols4';
   div.style.marginBottom='8px';
@@ -1152,6 +1161,7 @@ function guardarFecha(){
     fecha:fechaStr,
     mes,evento,
     recaudado:parseFloat(document.getElementById('nf-recaudado').value)||0,
+    estadoRecaudado:document.getElementById('nf-estado-recaudado').value,
     pptoPR:parseFloat(document.getElementById('nf-ppto-pr').value)||0,
     pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
     pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
@@ -1175,6 +1185,7 @@ function guardarFecha(){
   saveDB();
   ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas','nf-obs'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nf-estado-pago').value='PENDIENTE';
+  document.getElementById('nf-estado-recaudado').value='ADEUDA';
   ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows'].forEach(id=>document.getElementById(id).innerHTML='');
   ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   toast(editId?'Fecha actualizada ✓':'Fecha guardada ✓');
