@@ -512,10 +512,27 @@ body{min-height:100vh;display:flex;flex-direction:column}
         <div class="form-group"><label>Hasta</label><input type="date" id="rango-hasta"></div>
         <div class="form-group"><label>&nbsp;</label><button class="btn btn-accent" onclick="renderReporteRango()">Generar reporte</button></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:8px">
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
         <button class="btn btn-sm" onclick="atajoRango(7)">Últimos 7 días</button>
         <button class="btn btn-sm" onclick="atajoRango(15)">Últimos 15 días</button>
         <button class="btn btn-sm" onclick="atajoRango(30)">Últimos 30 días</button>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Secciones a incluir en el reporte</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          ${[
+            ['sec-resumen','Resumen general'],
+            ['sec-detalle','Detalle por fecha'],
+            ['sec-gastos','Distribución de gastos'],
+            ['sec-pendientes','Pagos pendientes'],
+            ['sec-mensuales','Sueldos mensuales'],
+            ['sec-boliches','Deudas de boliches']
+          ].map(([id,label])=>`
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+              <input type="checkbox" id="${id}" checked style="accent-color:var(--accent);width:14px;height:14px">
+              ${label}
+            </label>`).join('')}
+        </div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
@@ -540,108 +557,67 @@ const STORAGE_KEY = 'malianteo_db_2026';
 
 const DEFAULT_DB = {
   fechas: [
-    {id:1,fecha:'02/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:800000,notas:'',
-      pr:[
-        {nombre:'Nico W',monto:100000,estado:'P',nota:''},
-        {nombre:'Maga',monto:200000,estado:'P',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
-        {nombre:'Naccarato',monto:50000,estado:'P',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
-        {nombre:'Z',monto:200000,estado:'P',nota:''},
-        {nombre:'Bixha',monto:200000,estado:'P',nota:''}
-      ],
-      gastos:[],
-      comisiones:[]
-    },
-    {id:2,fecha:'09/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
-      pr:[
-        {nombre:'Fix',monto:50000,estado:'P',nota:''},
-        {nombre:'Maga',monto:200000,estado:'P',nota:''},
-        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
-        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
-        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
-      ],
-      gastos:[
-        {nombre:'Fiama adicional',monto:237250,estado:'P'},
-        {nombre:'Fix adicional',monto:235750,estado:'P'},
-        {nombre:'Nico W adicional',monto:440000,estado:'P'},
-        {nombre:'Nacca adicional',monto:64000,estado:'P'},
-        {nombre:'Maga adicional',monto:600000,estado:'P'}
-      ],
-      comisiones:[]
-    },
-    {id:3,fecha:'16/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
-      pr:[
-        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
-        {nombre:'Fix',monto:50000,estado:'P',nota:''},
-        {nombre:'Maga',monto:200000,estado:'P',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
-        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
-        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
-      ],
-      gastos:[{nombre:'PH pago 2/6',monto:350000,estado:'P'}],
-      comisiones:[]
-    },
-    {id:4,fecha:'23/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'Chat pato 28/05',
-      pr:[
-        {nombre:'Molfe',monto:100000,estado:'P',nota:'Chat pato 28/05'},
-        {nombre:'Fix',monto:50000,estado:'P',nota:''},
-        {nombre:'Maga',monto:200000,estado:'P',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'P',nota:''},
-        {nombre:'Nico W',monto:100000,estado:'P',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
-        {nombre:'Lil Paper',monto:400000,estado:'P',nota:''}
-      ],
-      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
-      comisiones:[{nombre:'Nico W',monto:14500,estado:'P'}]
-    },
-    {id:5,fecha:'30/05',mes:'MAYO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
-      pr:[
-        {nombre:'Molfe',monto:100000,estado:'P',nota:''},
-        {nombre:'Maga',monto:200000,estado:'NP',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'NP',nota:''},
-        {nombre:'Nico W',monto:100000,estado:'NP',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:400000,estado:'P',nota:''},
-        {nombre:'Z',monto:200000,estado:'P',nota:''},
-        {nombre:'Bixha',monto:200000,estado:'P',nota:''}
-      ],
-      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
-      comisiones:[
-        {nombre:'Nico W',monto:56500,estado:'NP'},
-        {nombre:'Fiama',monto:3000,estado:'NP'}
-      ]
-    },
-    {id:6,fecha:'06/06',mes:'JUNIO',evento:'Cruza',recaudado:0,ppto:0,notas:'',
-      pr:[
-        {nombre:'Molfe',monto:100000,estado:'NP',nota:'$50.000 adelanto'},
-        {nombre:'Fix',monto:50000,estado:'NP',nota:'Chat pato'},
-        {nombre:'Maga',monto:200000,estado:'NP',nota:''},
-        {nombre:'Fiama',monto:50000,estado:'NP',nota:''},
-        {nombre:'Nico W',monto:100000,estado:'NP',nota:''}
-      ],
-      dj:[
-        {nombre:'Mcrone',monto:600000,estado:'P',nota:''},
-        {nombre:'Vixxen',monto:200000,estado:'P',nota:''}
-      ],
-      gastos:[{nombre:'PH',monto:350000,estado:'NP'}],
-      comisiones:[]
-    }
+    {id:1,fecha:'02/05',fechaISO:'2026-05-02',mes:'MAYO',evento:'Cruza',recaudado:3051619.8,estadoRecaudado:'PAGADO',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Nico W',monto:100000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Naccarato',monto:50000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:400000,estado:'P'},{nombre:'Z',monto:200000,estado:'P'},{nombre:'Bixha',monto:200000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'P'}],gastos:[],comisiones:[]},
+    {id:2,fecha:'09/05',fechaISO:'2026-05-09',mes:'MAYO',evento:'Cruza',recaudado:0,estadoRecaudado:'ADEUDA',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Fix',monto:50000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Molfe',monto:100000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:400000,estado:'P'},{nombre:'Lil Paper',monto:400000,estado:'P'}],
+      ph:[],
+      gastos:[{nombre:'Fiama adicional',monto:237250,estado:'P'},{nombre:'Fix adicional',monto:235750,estado:'P'},{nombre:'Nico W adicional',monto:440000,estado:'P'},{nombre:'Nacca adicional',monto:64000,estado:'P'},{nombre:'Maga adicional',monto:600000,estado:'P'}],
+      comisiones:[]},
+    {id:3,fecha:'16/05',fechaISO:'2026-05-16',mes:'MAYO',evento:'Cruza',recaudado:2035850.2,estadoRecaudado:'PAGADO',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Molfe',monto:100000,estado:'P'},{nombre:'Fix',monto:50000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:400000,estado:'P'},{nombre:'Lil Paper',monto:400000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'P'}],gastos:[],comisiones:[]},
+    {id:4,fecha:'23/05',fechaISO:'2026-05-23',mes:'MAYO',evento:'Cruza',recaudado:2897401.68,estadoRecaudado:'PAGADO',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'Chat pato 28/05',
+      pr:[{nombre:'Molfe',monto:100000,estado:'P'},{nombre:'Fix',monto:50000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:400000,estado:'P'},{nombre:'Lil Paper',monto:400000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'P'}],gastos:[],comisiones:[{nombre:'Nico W',monto:14500,estado:'P'}]},
+    {id:5,fecha:'30/05',fechaISO:'2026-05-30',mes:'MAYO',evento:'Cruza',recaudado:3728897.88,estadoRecaudado:'ADEUDA',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Molfe',monto:100000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:400000,estado:'P'},{nombre:'Z',monto:200000,estado:'P'},{nombre:'Bixha',monto:200000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'P'}],gastos:[],comisiones:[{nombre:'Nico W',monto:56500,estado:'P'},{nombre:'Fiama',monto:3000,estado:'P'}]},
+    {id:6,fecha:'06/06',fechaISO:'2026-06-06',mes:'JUNIO',evento:'Cruza',recaudado:3668778.54,estadoRecaudado:'ADEUDA',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Molfe',monto:100000,estado:'P'},{nombre:'Fix',monto:50000,estado:'P'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'}],
+      dj:[{nombre:'Mcrone',monto:600000,estado:'P'},{nombre:'Vixxen',monto:200000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'P'}],
+      gastos:[{nombre:'Logo Juan',monto:200000,estado:'P'},{nombre:'Uber Fiama',monto:30000,estado:'P'}],
+      comisiones:[{nombre:'Nico W',monto:148500,estado:'P'}]},
+    {id:7,fecha:'13/06',fechaISO:'2026-06-13',mes:'JUNIO',evento:'Cruza',recaudado:1874679,estadoRecaudado:'ADEUDA',pptoPR:350000,pptoDJ:800000,pptoPH:350000,notas:'',
+      pr:[{nombre:'Molfe',monto:100000,estado:'NP'},{nombre:'Fix',monto:50000,estado:'NP'},{nombre:'Maga',monto:200000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:100000,estado:'P'},{nombre:'Lara',monto:50000,estado:'NP'},{nombre:'Santi N',monto:50000,estado:'NP'}],
+      dj:[{nombre:'Lil Paper',monto:400000,estado:'P'},{nombre:'Mcrone',monto:400000,estado:'P'}],
+      ph:[{nombre:'PH',monto:350000,estado:'NP'}],
+      gastos:[{nombre:'Uber Fiama',monto:10000,estado:'NP'}],
+      comisiones:[]},
+    {id:8,fecha:'06/06',fechaISO:'2026-06-06',mes:'JUNIO',evento:'Porteña',recaudado:1000000,estadoRecaudado:'PAGADO',pptoPR:0,pptoDJ:0,pptoPH:0,notas:'Gastos corren x Afo',
+      pr:[],dj:[],ph:[],gastos:[],comisiones:[]},
+    {id:9,fecha:'14/06',fechaISO:'2026-06-14',mes:'JUNIO',evento:'Lanús',recaudado:0,estadoRecaudado:'ADEUDA',pptoPR:0,pptoDJ:0,pptoPH:0,notas:'Dato pendiente',
+      pr:[{nombre:'Molfe',monto:100000,estado:'P'}],
+      dj:[{nombre:'Lil Paper',monto:300000,estado:'P'},{nombre:'Mcrone',monto:300000,estado:'P'}],
+      ph:[],gastos:[{nombre:'Pauta (mama pato)',monto:900000,estado:'P'}],comisiones:[]},
+    {id:10,fecha:'11/06',fechaISO:'2026-06-11',mes:'JUNIO',evento:'CHN',recaudado:0,estadoRecaudado:'ADEUDA',pptoPR:0,pptoDJ:0,pptoPH:0,notas:'Sin datos aun',
+      pr:[{nombre:'Molfe',monto:100000,estado:'NP'},{nombre:'Maga',monto:100000,estado:'P'},{nombre:'Fiama',monto:50000,estado:'P'},{nombre:'Nico W',monto:50000,estado:'NP'},{nombre:'Lara',monto:50000,estado:'NP'}],
+      dj:[{nombre:'Lil Paper',monto:200000,estado:'P'},{nombre:'Mcrone',monto:200000,estado:'P'}],
+      ph:[{nombre:'Mati',monto:250000,estado:'P'}],
+      gastos:[],comisiones:[{nombre:'Fiama',monto:120000,estado:'P'}]}
   ],
   boliches: [],
-  mensuales: {} // { "MAYO_2026": [{nombre, monto, estado, notas}] }
+  mensuales: {
+    'MAYO':[
+      {nombre:'Mica CM',monto:700000,estado:'P',notas:''},
+      {nombre:'Anto Fantini',monto:750000,estado:'P',notas:''},
+      {nombre:'Juan',monto:700000,estado:'P',notas:''},
+      {nombre:'Flor',monto:400000,estado:'NP',notas:'Faltan 200 k'}
+    ],
+    'JUNIO':[
+      {nombre:'Mica cm',monto:700000,estado:'NP',notas:'Mayo'},
+      {nombre:'Anto Fantini',monto:750000,estado:'NP',notas:'Mayo'},
+      {nombre:'Juan',monto:700000,estado:'NP',notas:'Mayo'},
+      {nombre:'Flor',monto:400000,estado:'P',notas:'Mayo'}
+    ]
+  }
 };
 
 function loadDB(){
@@ -767,10 +743,20 @@ function renderReporteRango(){
   const el=document.getElementById('reporte-rango-content');
   if(!desde||!hasta){el.innerHTML='<div class="empty">Elegí un rango de fechas para generar el reporte</div>';return;}
 
+  // qué secciones mostrar
+  const sec={
+    resumen:document.getElementById('sec-resumen')?.checked!==false,
+    detalle:document.getElementById('sec-detalle')?.checked!==false,
+    gastos:document.getElementById('sec-gastos')?.checked!==false,
+    pendientes:document.getElementById('sec-pendientes')?.checked!==false,
+    mensuales:document.getElementById('sec-mensuales')?.checked!==false,
+    boliches:document.getElementById('sec-boliches')?.checked!==false
+  };
+
   const fechas=DB.fechas.filter(f=>f.fechaISO && f.fechaISO>=desde && f.fechaISO<=hasta)
     .sort((a,b)=>a.fechaISO.localeCompare(b.fechaISO));
 
-  if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas cargadas en ese rango (recordá que solo las fechas guardadas con calendario entran en este filtro)</div>';return;}
+  if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas en ese rango — recordá que solo las fechas cargadas con el selector de calendario entran aquí</div>';return;}
 
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
   const totalGastado=fechas.reduce((s,f)=>s+totalCosto(f),0);
@@ -779,15 +765,75 @@ function renderReporteRango(){
   const desdeFmt=desde.split('-').reverse().join('/');
   const hastaFmt=hasta.split('-').reverse().join('/');
 
-  el.innerHTML=`
+  // gastos por categoría
+  const totalPR=fechas.reduce((s,f)=>(s+(f.pr||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalDJ=fechas.reduce((s,f)=>(s+(f.dj||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPH=fechas.reduce((s,f)=>(s+(f.ph||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalGAdic=fechas.reduce((s,f)=>(s+(f.gastos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalCom=fechas.reduce((s,f)=>(s+(f.comisiones||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+
+  // deudores del rango
+  const deudores={};
+  fechas.forEach(f=>{
+    pendientes(f).forEach(p=>{
+      if(!deudores[p.nombre])deudores[p.nombre]=0;
+      deudores[p.nombre]+=p.monto;
+    });
+  });
+
+  // meses incluidos en el rango
+  const mesesEnRango=[...new Set(fechas.map(f=>f.mes))];
+
+  let html='';
+
+  if(sec.resumen) html+=`
     <div class="report-section">
-      <h3>Reporte ${desdeFmt} al ${hastaFmt}</h3>
-      <div class="report-kv"><span class="report-k">Cantidad de fechas</span><span class="report-v">${fechas.length}</span></div>
+      <h3>Resumen — ${desdeFmt} al ${hastaFmt}</h3>
+      <div class="report-kv"><span class="report-k">Fechas en el rango</span><span class="report-v">${fechas.length}</span></div>
       <div class="report-kv"><span class="report-k">Recaudado</span><span class="report-v green">${fmt(totalRecaudado)}</span></div>
       <div class="report-kv"><span class="report-k">Gastado</span><span class="report-v red">${fmt(totalGastado)}</span></div>
       <div class="report-kv"><span class="report-k">Balance</span><span class="report-v ${balance>=0?'green':'red'}">${fmt(balance)}</span></div>
       <div class="report-kv"><span class="report-k">Pendiente de pago</span><span class="report-v red">${fmt(pendTotal)}</span></div>
-    </div>
+    </div>`;
+
+  if(sec.gastos) html+=`
+    <div class="report-section">
+      <h3>Distribución de gastos</h3>
+      <div class="report-kv"><span class="report-k">PR / Promotores</span><span class="report-v">${fmt(totalPR)} <span style="color:var(--text3);font-size:11px">${pct(totalPR,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">DJs</span><span class="report-v">${fmt(totalDJ)} <span style="color:var(--text3);font-size:11px">${pct(totalDJ,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">PH</span><span class="report-v">${fmt(totalPH)} <span style="color:var(--text3);font-size:11px">${pct(totalPH,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Gastos adicionales</span><span class="report-v">${fmt(totalGAdic)} <span style="color:var(--text3);font-size:11px">${pct(totalGAdic,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalCom)} <span style="color:var(--text3);font-size:11px">${pct(totalCom,totalGastado)}</span></span></div>
+    </div>`;
+
+  if(sec.pendientes) html+=`
+    <div class="report-section">
+      <h3>Pagos pendientes</h3>
+      ${Object.keys(deudores).length===0
+        ? '<div class="empty" style="padding:12px">Sin pendientes en este rango ✓</div>'
+        : Object.keys(deudores).sort().map(k=>`<div class="report-kv"><span class="report-k">${k}</span><span class="report-v red">${fmt(deudores[k])}</span></div>`).join('')}
+      ${Object.keys(deudores).length>0?`<div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px"><span class="report-k" style="font-weight:600">Total</span><span class="report-v red">${fmt(pendTotal)}</span></div>`:''}
+    </div>`;
+
+  if(sec.mensuales && mesesEnRango.length>0) html+=`
+    <div class="report-section">
+      <h3>Sueldos mensuales</h3>
+      ${mesesEnRango.map(mes=>{
+        const mens=getMensualesByMes(mes);
+        if(!mens.length)return '';
+        return `<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">${mes}</div>
+          ${mens.map(m=>`<div class="report-kv"><span class="report-k">${m.nombre}${m.notas?' — '+m.notas:''}</span><span class="report-v ${m.estado==='NP'?'red':'green'}">${fmt(m.monto)} · ${m.estado}</span></div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  if(sec.boliches && DB.boliches.length>0) html+=`
+    <div class="report-section">
+      <h3>Deudas de boliches</h3>
+      ${DB.boliches.map(b=>`<div class="report-kv"><span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span><span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} · ${b.estado}</span></div>`).join('')}
+    </div>`;
+
+  if(sec.detalle) html+=`
     <div class="report-section">
       <h3>Detalle por fecha</h3>
       ${fechas.map(f=>`
@@ -801,8 +847,9 @@ function renderReporteRango(){
             <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
           </div>`).join('')}
         </div>`).join('')}
-    </div>
-  `;
+    </div>`;
+
+  el.innerHTML=html||'<div class="empty">Seleccioná al menos una sección para mostrar</div>';
 }
 
 function showFechasTab(btn, id){
@@ -931,6 +978,13 @@ function renderFechas(){
   if(evento)fechas=fechas.filter(f=>f.evento===evento);
   if(estado==='pend')fechas=fechas.filter(f=>pendientes(f).length>0);
   if(estado==='ok')fechas=fechas.filter(f=>pendientes(f).length===0);
+
+  // ordenar cronológicamente: por fechaISO si existe, sino por fecha DD/MM
+  fechas=[...fechas].sort((a,b)=>{
+    const ai=a.fechaISO||('2026-'+a.fecha.split('/').reverse().join('-'));
+    const bi=b.fechaISO||('2026-'+b.fecha.split('/').reverse().join('-'));
+    return ai.localeCompare(bi);
+  });
 
   const el=document.getElementById('fechas-list');
   if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas para los filtros seleccionados</div>';return;}
