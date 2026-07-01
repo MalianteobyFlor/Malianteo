@@ -422,8 +422,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
       </div>
       <div class="form-group"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
     </div>
-    <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
-      <div class="form-group"><label>Presupuesto PR ($)</label><input type="number" id="nf-ppto-pr" placeholder="0" oninput="actualizarVsPpto()"></div>
+    <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
       <div class="form-group"><label>Presupuesto DJs ($)</label><input type="number" id="nf-ppto-dj" placeholder="0" oninput="actualizarVsPpto()"></div>
       <div class="form-group"><label>Presupuesto PH ($)</label><input type="number" id="nf-ppto-ph" placeholder="0" oninput="actualizarVsPpto()"></div>
     </div>
@@ -432,10 +431,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div class="card">
     <div class="card-header">
       <span class="card-title">PR / Promotores</span>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span id="pr-vs-ppto" style="font-size:11px"></span>
-        <button class="btn btn-sm" onclick="addStaffRow('pr-rows','PR')">+ Agregar</button>
-      </div>
+      <button class="btn btn-sm" onclick="addStaffRow('pr-rows','PR')">+ Agregar</button>
     </div>
     <div id="pr-rows"></div>
   </div>
@@ -700,9 +696,26 @@ function toast(msg){
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
 }
+function esCHNJueves(f){
+  // CHN los jueves: los gastos son solo informativos, no se restan del recaudado
+  if(f.evento!=='CHN')return false;
+  if(!f.fechaISO)return false;
+  const dia=new Date(f.fechaISO+'T12:00:00').getDay(); // 4 = jueves
+  return dia===4;
+}
 function allStaff(f){return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.comisiones||[])]}
 function pendientes(f){return allStaff(f).filter(p=>p.estado==='NP')}
 function totalCosto(f){return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.comisiones||[])].reduce((s,p)=>s+p.monto,0)}
+// Para CHN jueves: el balance no descuenta los costos, son solo informativos
+function balanceFecha(f){
+  if(esCHNJueves(f)) return f.recaudado; // recaudado ES el final
+  return f.recaudado - totalCosto(f);
+}
+// Para totales del mes: CHN jueves no aporta sus costos al gasto total
+function costoParaBalance(f){
+  if(esCHNJueves(f)) return 0;
+  return totalCosto(f);
+}
 function totalPendiente(f){return pendientes(f).reduce((s,p)=>s+p.monto,0)}
 function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes)}
 function nextId(){return DB.fechas.length?Math.max(...DB.fechas.map(f=>f.id))+1:1}
@@ -875,7 +888,7 @@ function renderDashboard(){
   const mes=document.getElementById('dash-mes').value;
   const fechas=getFechasByMes(mes);
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
-  const totalGastadoFechas=fechas.reduce((s,f)=>s+totalCosto(f),0);
+  const totalGastadoFechas=fechas.reduce((s,f)=>s+costoParaBalance(f),0);
   const totalMens=totalMensuales(mes);
   const totalGastado=totalGastadoFechas+totalMens;
   const balance=totalRecaudado-totalGastado;
@@ -1020,9 +1033,8 @@ function renderFechas(){
         </div>
       </div>
       <div class="fecha-body" id="body-${f.id}">
-        ${(f.pptoPR||f.pptoDJ||f.pptoPH)?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-          ${[['PR',(f.pr||[]).reduce((s,p)=>s+p.monto,0),f.pptoPR||0],
-             ['DJs',(f.dj||[]).reduce((s,p)=>s+p.monto,0),f.pptoDJ||0],
+        ${(f.pptoDJ||f.pptoPH)?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+          ${[['DJs',(f.dj||[]).reduce((s,p)=>s+p.monto,0),f.pptoDJ||0],
              ['PH',(f.ph||[]).reduce((s,p)=>s+p.monto,0),f.pptoPH||0]
           ].map(([label,gastado,ppto])=>{
             if(!ppto)return '';
@@ -1038,7 +1050,12 @@ function renderFechas(){
           }).join('')}
         </div>`:''}
         ${f.notas?`<p style="font-size:12px;color:var(--text3);margin-bottom:12px">Nota: ${f.notas}</p>`:''}
-        ${f.recaudado>0?`<p style="font-size:12px;color:var(--text2);margin-bottom:12px">Recaudado: <strong style="color:var(--success)">${fmt(f.recaudado)}</strong> · Balance: <strong style="color:${f.recaudado-totalCosto(f)>=0?'var(--success)':'var(--danger)'}">${fmt(f.recaudado-totalCosto(f))}</strong></p>`:''}
+        ${f.recaudado>0?`<p style="font-size:12px;color:var(--text2);margin-bottom:12px">
+          Recaudado: <strong style="color:var(--success)">${fmt(f.recaudado)}</strong>
+          ${esCHNJueves(f)
+            ? ` · Gasto (info): <span style="color:var(--text3)">${fmt(totalCosto(f))}</span> · <span style="color:var(--accent);font-size:11px">CHN jueves — recaudado es el neto final</span>`
+            : ` · Balance: <strong style="color:${balanceFecha(f)>=0?'var(--success)':'var(--danger)'}">${fmt(balanceFecha(f))}</strong>`}
+        </p>`:''}
         <table class="tbl">
           <thead><tr><th>Persona</th><th>Rol</th><th>Monto</th><th>Estado</th><th>Nota</th></tr></thead>
           <tbody>
@@ -1084,7 +1101,6 @@ function loadFechaIntoForm(f){
   document.getElementById('nf-mes').value=f.mes||'MAYO';
   document.getElementById('nf-recaudado').value=f.recaudado||0;
   document.getElementById('nf-estado-recaudado').value=f.estadoRecaudado||'ADEUDA';
-  document.getElementById('nf-ppto-pr').value=f.pptoPR||f.ppto||0;
   document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
   document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
   document.getElementById('nf-notas').value=f.notas||'';
@@ -1410,13 +1426,13 @@ function togglePptoSection(){
   if(sec) sec.style.display=esCruza?'grid':'none';
   // limpiar indicadores si no es Cruza
   if(!esCruza){
-    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+    ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   }
 }
 
 // Plantillas por venue
 const PLANTILLAS = {
-  'Cruza': { pptoPR: 350000, pptoDJ: 800000, pptoPH: 1400000 }
+  'Cruza': { pptoDJ: 800000, pptoPH: 1400000 }
 };
 
 function aplicarPlantilla(venue){
@@ -1424,7 +1440,6 @@ function aplicarPlantilla(venue){
   togglePptoSection();
   const p=PLANTILLAS[venue];
   if(p){
-    document.getElementById('nf-ppto-pr').value=p.pptoPR;
     document.getElementById('nf-ppto-dj').value=p.pptoDJ;
     document.getElementById('nf-ppto-ph').value=p.pptoPH;
     actualizarVsPpto();
@@ -1432,13 +1447,12 @@ function aplicarPlantilla(venue){
     document.getElementById('nf-ppto-pr').value='';
     document.getElementById('nf-ppto-dj').value='';
     document.getElementById('nf-ppto-ph').value='';
-    ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+    ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   }
   toast('Plantilla '+venue+' cargada ⚡');
 }
 
 function actualizarVsPpto(){
-  const pptoPR=parseFloat(document.getElementById('nf-ppto-pr').value)||0;
   const pptoDJ=parseFloat(document.getElementById('nf-ppto-dj').value)||0;
   const pptoPH=parseFloat(document.getElementById('nf-ppto-ph').value)||0;
 
@@ -1456,7 +1470,6 @@ function actualizarVsPpto(){
       ${excedido?'▲ excedido '+fmt(diff):'✓ dentro del ppto'}
     </span>`;
   }
-  setIndicador('pr-vs-ppto', calcTotal('pr-rows'), pptoPR);
   setIndicador('dj-vs-ppto', calcTotal('dj-rows'), pptoDJ);
   setIndicador('ph-vs-ppto', calcTotal('ph-rows'), pptoPH);
 }
@@ -1477,7 +1490,6 @@ function guardarFecha(){
     mes,evento,
     recaudado:parseFloat(document.getElementById('nf-recaudado').value)||0,
     estadoRecaudado:document.getElementById('nf-estado-recaudado').value,
-    pptoPR:parseFloat(document.getElementById('nf-ppto-pr').value)||0,
     pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
     pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
     notas:document.getElementById('nf-notas').value,
@@ -1499,7 +1511,7 @@ function guardarFecha(){
   ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nf-estado-recaudado').value='ADEUDA';
   ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows'].forEach(id=>document.getElementById(id).innerHTML='');
-  ['pr-vs-ppto','dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
+  ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   toast(editId?'Fecha actualizada ✓':'Fecha guardada ✓');
 }
 
@@ -1510,7 +1522,7 @@ function renderReporte(){
   const mes=document.getElementById('rep-mes').value;
   const fechas=getFechasByMes(mes);
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
-  const totalGastadoFechas=fechas.reduce((s,f)=>s+totalCosto(f),0);
+  const totalGastadoFechas=fechas.reduce((s,f)=>s+costoParaBalance(f),0);
   const totalMens=totalMensuales(mes);
   const totalGastado=totalGastadoFechas+totalMens;
   const balance=totalRecaudado-totalGastado;
