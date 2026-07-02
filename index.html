@@ -470,6 +470,19 @@ body{min-height:100vh;display:flex;flex-direction:column}
     <div id="comision-rows"></div>
   </div>
 
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pagos del boliche</span>
+      <button class="btn btn-sm" onclick="addPagoBolicheRow()">+ Agregar pago</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Registrá cada transferencia que llegó. El sistema calcula automáticamente cuánto queda pendiente.</div>
+    <div class="form-row" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
+      <div class="form-group"><label>Total recaudado de la fecha</label><input type="number" id="nf-total-boliche" placeholder="0" oninput="actualizarRestoBoliche()"></div>
+      <div id="resto-boliche" style="display:flex;align-items:flex-end;padding-bottom:10px;font-size:13px;color:var(--text2)"></div>
+    </div>
+    <div id="pagos-boliche-rows"></div>
+  </div>
+
   <button class="btn btn-accent" onclick="guardarFecha()" style="width:100%;padding:12px;font-size:14px;margin-top:4px">
     Guardar fecha
   </button>
@@ -711,10 +724,13 @@ function balanceFecha(f){
   if(esCHNJueves(f)) return f.recaudado; // recaudado ES el final
   return f.recaudado - totalCosto(f);
 }
-// Para totales del mes: CHN jueves no aporta sus costos al gasto total
 function costoParaBalance(f){
-  if(esCHNJueves(f)) return 0;
-  return totalCosto(f);
+  return totalCosto(f); // siempre suma al total
+}
+function restoPendienteBoliche(f){
+  const total=f.totalBoliche||f.recaudado||0;
+  const cobrado=(f.pagosBoliche||[]).reduce((s,p)=>s+p.monto,0);
+  return Math.max(0, total-cobrado);
 }
 function totalPendiente(f){return pendientes(f).reduce((s,p)=>s+p.monto,0)}
 function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes)}
@@ -1075,6 +1091,25 @@ function renderFechas(){
           <button class="btn btn-sm" onclick="editFecha(${f.id})">Editar</button>
           <button class="btn btn-sm btn-danger" onclick="eliminarFecha(${f.id})">Eliminar</button>
         </div>
+        ${(f.pagosBoliche&&f.pagosBoliche.length>0)||(f.totalBoliche>0)?`
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pagos del boliche</div>
+          ${(f.pagosBoliche||[]).map(p=>`<div class="person-row">
+            <div><div class="person-name" style="font-size:13px">${p.nota||'Pago'}</div>
+            ${p.fechaPago?`<div class="person-sub">${p.fechaPago.split('-').reverse().join('/')}</div>`:''}
+            </div>
+            <div style="font-family:var(--font-mono);font-size:13px;color:var(--success)">${fmt(p.monto)}</div>
+          </div>`).join('')}
+          ${(()=>{
+            const total=f.totalBoliche||f.recaudado||0;
+            const cobrado=(f.pagosBoliche||[]).reduce((s,p)=>s+p.monto,0);
+            const resto=total-cobrado;
+            return total>0?`<div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:4px;border-top:1px solid var(--border);font-size:13px">
+              <span style="color:var(--text2)">Total recaudado: <strong>${fmt(total)}</strong> · Cobrado: <strong style="color:var(--success)">${fmt(cobrado)}</strong></span>
+              <span style="font-family:var(--font-mono);color:${resto>0?'var(--danger)':'var(--success)'}">Pendiente: ${fmt(resto)}</span>
+            </div>`:'';
+          })()}
+        </div>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1104,6 +1139,9 @@ function loadFechaIntoForm(f){
   document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
   document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
   document.getElementById('nf-notas').value=f.notas||'';
+  document.getElementById('nf-total-boliche').value=f.totalBoliche||f.recaudado||0;
+  document.getElementById('pagos-boliche-rows').innerHTML='';
+  (f.pagosBoliche||[]).forEach(p=>addPagoBolicheRow(p));
   if(f.fechaISO)document.getElementById('nf-fecha').value=f.fechaISO;
   document.getElementById('pr-rows').innerHTML='';
   document.getElementById('dj-rows').innerHTML='';
@@ -1244,10 +1282,10 @@ function guardarMensuales(){
 function renderRecaudadoBoliches(){
   const el=document.getElementById('recaudado-boliches-list');
   if(!el)return;
-  // agrupar fechas con recaudado por venue
   const grupos={};
   DB.fechas.forEach(f=>{
-    if(!f.recaudado)return;
+    const total=f.totalBoliche||f.recaudado||0;
+    if(!total)return;
     if(!grupos[f.evento])grupos[f.evento]=[];
     grupos[f.evento].push(f);
   });
@@ -1257,25 +1295,38 @@ function renderRecaudadoBoliches(){
   const estadoColor={'ADEUDA':'var(--danger)','PARCIAL':'var(--warning)','PAGADO':'var(--success)',undefined:'var(--danger)'};
   el.innerHTML=venues.map(v=>{
     const fechas=grupos[v];
-    const totalRec=fechas.reduce((s,f)=>s+f.recaudado,0);
-    const totalAdeudado=fechas.filter(f=>(f.estadoRecaudado||'ADEUDA')!=='PAGADO').reduce((s,f)=>s+f.recaudado,0);
+    const totalRec=fechas.reduce((s,f)=>s+(f.totalBoliche||f.recaudado||0),0);
+    const totalPend=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
     return `<div class="fecha-block" style="margin-bottom:10px">
-      <div class="fecha-hdr" style="cursor:default">
+      <div class="fecha-hdr" onclick="toggleFecha('b${v.replace(/\s/g,'')}')">
         <div class="fecha-hdr-left"><span class="fecha-hdr-title">${v}</span></div>
         <div class="fecha-hdr-right">
-          <span style="font-size:11px;color:var(--text2)">Recaudado: ${fmt(totalRec)}</span>
-          ${totalAdeudado>0?`<span class="badge badge-np">Pend: ${fmt(totalAdeudado)}</span>`:'<span class="badge badge-p">Al día</span>'}
+          <span style="font-size:11px;color:var(--text2)">Total: ${fmt(totalRec)}</span>
+          ${totalPend>0?`<span class="badge badge-np">Pend: ${fmt(totalPend)}</span>`:'<span class="badge badge-p">Al día</span>'}
+          <svg id="chev-b${v.replace(/\s/g,'')}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </div>
-      <div style="padding:4px 18px">
+      <div class="fecha-body" id="body-b${v.replace(/\s/g,'')}">
         ${fechas.map(f=>{
+          const total=f.totalBoliche||f.recaudado||0;
+          const cobrado=(f.pagosBoliche||[]).reduce((s,p)=>s+p.monto,0);
+          const resto=total-cobrado;
           const est=f.estadoRecaudado||'ADEUDA';
-          return `<div class="person-row">
-            <div><div class="person-name">${f.fecha} · ${f.mes}</div></div>
-            <div style="display:flex;gap:8px;align-items:center">
+          return `<div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-weight:500;font-size:13px">${f.fecha} · ${f.mes}</span>
               <span style="font-size:11px;color:${estadoColor[est]}">${estadoLabel[est]}</span>
-              <span style="font-family:var(--font-mono);font-size:13px">${fmt(f.recaudado)}</span>
             </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)">
+              <span>Total: ${fmt(total)} · Cobrado: <span style="color:var(--success)">${fmt(cobrado)}</span></span>
+              <span style="color:${resto>0?'var(--danger)':'var(--success)'}">Pendiente: ${fmt(resto)}</span>
+            </div>
+            ${(f.pagosBoliche||[]).length>0?`<div style="margin-top:6px;padding-left:8px;border-left:2px solid var(--border2)">
+              ${(f.pagosBoliche||[]).map(p=>`<div style="font-size:11px;color:var(--text3);display:flex;justify-content:space-between;padding:2px 0">
+                <span>${p.nota||'Pago'}${p.fechaPago?' — '+p.fechaPago.split('-').reverse().join('/'):''}</span>
+                <span style="color:var(--success)">${fmt(p.monto)}</span>
+              </div>`).join('')}
+            </div>`:''}
           </div>`;
         }).join('')}
       </div>
@@ -1366,6 +1417,33 @@ function addPhRow(data={}){
   `;
   document.getElementById('ph-rows').appendChild(div);
 }
+function addPagoBolicheRow(data={}){
+  const div=document.createElement('div');
+  div.className='form-row';
+  div.style.cssText='grid-template-columns:1fr 120px 1fr auto;gap:8px;margin-bottom:6px;align-items:end';
+  div.innerHTML=`
+    <div class="form-group"><label>Descripción / nota</label><input type="text" data-field="nota" value="${data.nota||''}" placeholder="Ej: transferencia parcial, seña..."></div>
+    <div class="form-group"><label>Monto</label><input type="number" data-field="monto" value="${data.monto||''}" placeholder="0" oninput="actualizarRestoBoliche()"></div>
+    <div class="form-group"><label>Fecha del pago</label><input type="date" data-field="fechaPago" value="${data.fechaPago||''}"></div>
+    <div class="form-group"><label>&nbsp;</label>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.form-row').remove();actualizarRestoBoliche()">✕</button>
+    </div>
+  `;
+  document.getElementById('pagos-boliche-rows').appendChild(div);
+  actualizarRestoBoliche();
+}
+
+function actualizarRestoBoliche(){
+  const total=parseFloat(document.getElementById('nf-total-boliche').value)||0;
+  const cobrado=[...document.getElementById('pagos-boliche-rows').querySelectorAll('input[data-field=monto]')]
+    .reduce((s,i)=>s+(parseFloat(i.value)||0),0);
+  const resto=total-cobrado;
+  const el=document.getElementById('resto-boliche');
+  if(!el)return;
+  if(!total){el.innerHTML='';return;}
+  el.innerHTML=`Cobrado: <strong style="color:var(--success);margin:0 6px">${fmt(cobrado)}</strong> · Pendiente: <strong style="color:${resto>0?'var(--danger)':'var(--success)'}; margin-left:6px">${fmt(resto)}</strong>`;
+}
+
 function addGastoRow(data={}){
   const div=document.createElement('div');
   div.className='form-row cols4';
@@ -1493,6 +1571,13 @@ function guardarFecha(){
     pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
     pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
     notas:document.getElementById('nf-notas').value,
+    totalBoliche:parseFloat(document.getElementById('nf-total-boliche').value)||0,
+    pagosBoliche:[...document.getElementById('pagos-boliche-rows').querySelectorAll('.form-row')].map(row=>{
+      const inputs=row.querySelectorAll('input[data-field]');
+      const obj={};
+      inputs.forEach(i=>{obj[i.dataset.field]=i.dataset.field==='monto'?(parseFloat(i.value)||0):i.value});
+      return obj;
+    }).filter(p=>p.monto>0),
     pr:parseRows('pr-rows'),
     dj:parseRows('dj-rows'),
     ph:parseRows('ph-rows'),
@@ -1508,7 +1593,9 @@ function guardarFecha(){
     DB.fechas.push(obj);
   }
   saveDB();
-  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas'].forEach(id=>document.getElementById(id).value='');
+  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas','nf-total-boliche'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('pagos-boliche-rows').innerHTML='';
+  const rb=document.getElementById('resto-boliche');if(rb)rb.innerHTML='';
   document.getElementById('nf-estado-recaudado').value='ADEUDA';
   ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows'].forEach(id=>document.getElementById(id).innerHTML='');
   ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
@@ -1529,6 +1616,7 @@ function renderReporte(){
   const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
   const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0)+pendienteMensuales(mes);
   const totalBoliches=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
+  const pendBolichePagos=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
 
   // deudores
   const deudores={};
@@ -1582,18 +1670,43 @@ function renderReporte(){
     </div>
 
     <div class="report-section">
-      <h3>Deudas de boliches / venues</h3>
+      <h3>Estado de cobro por fecha</h3>
+      ${fechas.filter(f=>(f.totalBoliche||f.recaudado)>0).length===0
+        ? '<div class="empty" style="padding:12px">Sin recaudación cargada en este mes</div>'
+        : fechas.filter(f=>(f.totalBoliche||f.recaudado)>0).map(f=>{
+            const total=f.totalBoliche||f.recaudado||0;
+            const cobrado=(f.pagosBoliche||[]).reduce((s,p)=>s+p.monto,0);
+            const resto=total-cobrado;
+            return `<div class="report-kv" style="flex-direction:column;align-items:flex-start;gap:4px;padding:10px 0">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <span class="report-k">${f.fecha} · ${f.evento}</span>
+                <span class="report-v ${resto>0?'red':'green'}">${resto>0?'Pendiente '+fmt(resto):'✓ Cobrado completo'}</span>
+              </div>
+              <div style="font-size:12px;color:var(--text3)">Total: ${fmt(total)} · Cobrado: ${fmt(cobrado)}
+                ${(f.pagosBoliche||[]).length>0?' — '+f.pagosBoliche.map(p=>`${p.nota||'Pago'}: ${fmt(p.monto)}`).join(', '):''}
+              </div>
+            </div>`;
+          }).join('')
+      }
+      <div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+        <span class="report-k" style="font-weight:600">Total pendiente de cobro (mes)</span>
+        <span class="report-v red">${fmt(pendBolichePagos)}</span>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h3>Otras deudas de boliches</h3>
       ${DB.boliches.length===0
-        ? '<div class="empty" style="padding:12px">Sin deudas cargadas</div>'
+        ? '<div class="empty" style="padding:12px">Sin deudas manuales cargadas</div>'
         : DB.boliches.map(b=>`<div class="report-kv">
             <span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span>
             <span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} — ${b.estado}</span>
           </div>`).join('')
       }
-      <div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
+      ${DB.boliches.length>0?`<div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px">
         <span class="report-k" style="font-weight:600">Total deuda boliches</span>
         <span class="report-v red">${fmt(totalBoliches)}</span>
-      </div>
+      </div>`:''}
     </div>
 
     <div class="report-section">
