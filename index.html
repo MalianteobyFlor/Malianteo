@@ -312,7 +312,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div id="tf-mensuales" style="display:none">
     <div class="month-bar">
       <label>Mes:</label>
-      <select id="mensual-mes" onchange="renderMensuales()">
+      <select id="mensual-mes" onchange="renderMensualPagina()">
         <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
         <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
         <option value="MAYO" selected>Mayo</option><option value="JUNIO">Junio</option>
@@ -321,10 +321,46 @@ body{min-height:100vh;display:flex;flex-direction:column}
         <option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option>
       </select>
     </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Sueldos fijos mensuales</span></div>
-      <div id="mensuales-list"></div>
-      <button class="btn btn-accent" onclick="guardarMensuales()" style="margin-top:12px">Guardar cambios</button>
+    <div class="tabs">
+      <button class="tab active" onclick="showMensualSubTab(this,'ms-publicidad')">Depto Publicidad</button>
+      <button class="tab" onclick="showMensualSubTab(this,'ms-pauta')">Depto Pauta</button>
+      <button class="tab" onclick="showMensualSubTab(this,'ms-diseno')">Depto Diseño</button>
+      <button class="tab" onclick="showMensualSubTab(this,'ms-sueldos')">Sueldos fijos</button>
+    </div>
+    <div id="ms-publicidad">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Depto Publicidad — gastos del mes</span>
+          <button class="btn btn-sm" onclick="addDeptoRow('publicidad')">+ Agregar</button>
+        </div>
+        <div id="depto-publicidad-rows"></div>
+        <button class="btn btn-accent" onclick="guardarDeptos('publicidad')" style="margin-top:12px">Guardar cambios</button>
+      </div>
+    </div>
+    <div id="ms-pauta" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Depto Pauta — gastos del mes</span>
+          <button class="btn btn-sm" onclick="addDeptoRow('pauta')">+ Agregar</button>
+        </div>
+        <div id="depto-pauta-rows"></div>
+        <button class="btn btn-accent" onclick="guardarDeptos('pauta')" style="margin-top:12px">Guardar cambios</button>
+      </div>
+    </div>
+    <div id="ms-diseno" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Depto Diseño — gastos del mes</span>
+          <button class="btn btn-sm" onclick="addDeptoRow('diseno')">+ Agregar</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Usá el selector de persona para distinguir, por ejemplo, "Diseñador Juan" de "Juan" (DJ).</div>
+        <div id="depto-diseno-rows"></div>
+        <button class="btn btn-accent" onclick="guardarDeptos('diseno')" style="margin-top:12px">Guardar cambios</button>
+      </div>
+    </div>
+    <div id="ms-sueldos" style="display:none">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Sueldos fijos mensuales</span></div>
+        <div id="mensuales-list"></div>
+        <button class="btn btn-accent" onclick="guardarMensuales()" style="margin-top:12px">Guardar cambios</button>
+      </div>
     </div>
   </div>
 </div>
@@ -360,8 +396,48 @@ body{min-height:100vh;display:flex;flex-direction:column}
       <div id="recaudado-boliches-list"></div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Deudas de Cristian (socio)</span></div>
+      <div class="card-header" style="cursor:pointer" onclick="toggleRecaudadoCobrado()">
+        <span class="card-title">Ya cobradas</span>
+        <svg id="chev-recaudado-cobrado" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:.2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div id="recaudado-boliches-cobrado-list" style="display:none"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Deudas de Cristian (socio)</span>
+        <button class="btn btn-sm" onclick="addDeudaCristian()">+ Agregar fecha vieja / manual</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Las fechas marcadas "Comparte con Cristian" se agregan solas. Acá podés sumar deuda vieja o manual, y marcar cada una como pagada cuando Cristian te devuelva.</div>
       <div id="cristian-deudas-list"></div>
+    </div>
+    <div id="cristian-form" style="display:none" class="card">
+      <div class="card-title" style="margin-bottom:12px">Deuda de Cristian (manual)</div>
+      <input type="hidden" id="cr-editid" value="">
+      <div class="form-row">
+        <div class="form-group"><label>Concepto / Evento</label><input id="cr-concepto" type="text" placeholder="Ej: Fecha vieja Cruza 22/03"></div>
+        <div class="form-group"><label>Fecha (opcional)</label><input id="cr-fecha" type="text" placeholder="Ej: 22/03"></div>
+        <div class="form-group"><label>Mes</label>
+          <select id="cr-mes">
+            <option value="ENERO">Enero</option><option value="FEBRERO">Febrero</option>
+            <option value="MARZO">Marzo</option><option value="ABRIL">Abril</option>
+            <option value="MAYO">Mayo</option><option value="JUNIO">Junio</option>
+            <option value="JULIO" selected>Julio</option><option value="AGOSTO">Agosto</option>
+            <option value="SEPTIEMBRE">Septiembre</option><option value="OCTUBRE">Octubre</option>
+            <option value="NOVIEMBRE">Noviembre</option><option value="DICIEMBRE">Diciembre</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Monto</label><input id="cr-monto" type="number" placeholder="0"></div>
+        <div class="form-group"><label>Estado</label>
+          <select id="cr-estado"><option value="NP">Pendiente</option><option value="P">Pagado</option></select>
+        </div>
+        <div class="form-group"><label>Notas</label><input id="cr-notas" type="text" placeholder="..."></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-accent" onclick="guardarDeudaCristian()">Guardar</button>
+        <button class="btn" onclick="document.getElementById('cristian-form').style.display='none'">Cancelar</button>
+      </div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -369,6 +445,13 @@ body{min-height:100vh;display:flex;flex-direction:column}
         <button class="btn btn-sm" onclick="addDeudaBoliche()">+ Agregar</button>
       </div>
       <div id="boliches-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="cursor:pointer" onclick="toggleAbonadas()">
+        <span class="card-title">Ya abonadas</span>
+        <svg id="chev-abonadas" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:.2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div id="boliches-abonadas-list" style="display:none"></div>
     </div>
     <div id="boliches-form" style="display:none" class="card">
       <div class="card-title" style="margin-bottom:12px">Nueva deuda de boliche</div>
@@ -446,15 +529,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
       </div>
     </div>
     <div class="form-row cols3">
-      <div class="form-group"><label>Recaudado total ($)</label><input type="number" id="nf-recaudado" placeholder="0"></div>
-      <div class="form-group"><label>Estado de pago de lo recaudado</label>
-        <select id="nf-estado-recaudado">
-          <option value="ADEUDA">🔴 Adeuda</option>
-          <option value="PARCIAL">🔶 Parcialmente pagado</option>
-          <option value="PAGADO">✅ Pagado</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
+      <div class="form-group" style="grid-column:span 3"><label>Notas</label><input type="text" id="nf-notas" placeholder="Observaciones..."></div>
     </div>
     <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:4px">
       <input type="checkbox" id="nf-comparte-cristian" style="accent-color:var(--accent);width:14px;height:14px">
@@ -507,20 +582,6 @@ body{min-height:100vh;display:flex;flex-direction:column}
       <button class="btn btn-sm" onclick="addGastoRow()">+ Agregar</button>
     </div>
     <div id="gasto-rows"></div>
-  </div>
- 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Pauta</span>
-      <button class="btn btn-sm" onclick="addPautaRow()">+ Agregar</button>
-    </div>
-    <div id="pauta-rows"></div>
-  </div>
- 
-  <div class="card">
-    <div class="card-header"><span class="card-title">Diseño</span>
-      <button class="btn btn-sm" onclick="addDisenoRow()">+ Agregar</button>
-    </div>
-    <div id="diseno-rows"></div>
   </div>
  
   <div class="card">
@@ -665,58 +726,80 @@ const DEFAULT_DB = {
       "evento": "Cruza",
       "recaudado": 3051619.8,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 350000,
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 3051619.8,
+      "pagosBoliche": [
+        {
+          "nota": "",
+          "monto": 3051619.8,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Naccarato",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Z",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Bixha",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 2,
@@ -731,31 +814,36 @@ const DEFAULT_DB = {
           "nombre": "Fix",
           "monto": 50000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Molfe",
           "monto": 100000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
@@ -763,43 +851,57 @@ const DEFAULT_DB = {
           "nombre": "Mcrone",
           "monto": 400000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lil Paper",
           "monto": 400000,
           "estado": "P",
-          "nota": ""
+          "nota": "",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [
         {
           "nombre": "Fiama adicional",
           "monto": 237250,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix adicional",
           "monto": 235750,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W adicional",
           "monto": 440000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nacca adicional",
           "monto": 64000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga adicional",
           "monto": 600000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": [],
+      "compartCristian": false,
+      "asistencia": []
     },
     {
       "id": 3,
@@ -809,58 +911,80 @@ const DEFAULT_DB = {
       "evento": "Cruza",
       "recaudado": 2035850.2,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 350000,
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 2035850.2,
+      "pagosBoliche": [
+        {
+          "nota": "",
+          "monto": 2035850.2,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 4,
@@ -870,54 +994,71 @@ const DEFAULT_DB = {
       "evento": "Cruza",
       "recaudado": 2897401.68,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 350000,
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "Chat pato 28/05",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 2897401.68,
+      "pagosBoliche": [
+        {
+          "nota": "",
+          "monto": 2897401.68,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
@@ -927,7 +1068,12 @@ const DEFAULT_DB = {
           "monto": 14500,
           "estado": "P"
         }
-      ]
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 5,
@@ -937,54 +1083,71 @@ const DEFAULT_DB = {
       "evento": "Cruza",
       "recaudado": 3728897.88,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 350000,
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 3728897.88,
+      "pagosBoliche": [
+        {
+          "nota": "",
+          "monto": 3728897.88,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Z",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Bixha",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
@@ -999,7 +1162,12 @@ const DEFAULT_DB = {
           "monto": 3000,
           "estado": "P"
         }
-      ]
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 6,
@@ -1009,66 +1177,90 @@ const DEFAULT_DB = {
       "evento": "Cruza",
       "recaudado": 3668778.54,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 350000,
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 3668778.54,
+      "pagosBoliche": [
+        {
+          "nota": "19/06 Transf cancela parte",
+          "monto": 1152665.71,
+          "fechaPago": "2026-06-19"
+        },
+        {
+          "nota": "24/06 Transf cancela total",
+          "monto": 2516112.83,
+          "fechaPago": "2026-06-24"
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 600000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Vixxen",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [
         {
           "nombre": "Logo Juan ",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Uber Fiama",
           "monto": 30000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "comisiones": [
@@ -1077,7 +1269,12 @@ const DEFAULT_DB = {
           "monto": 148500,
           "estado": "P"
         }
-      ]
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 7,
@@ -1090,72 +1287,106 @@ const DEFAULT_DB = {
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "Faltan $90791.83",
+      "compartCristian": false,
+      "asistencia": [],
       "totalBoliche": 1874679,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Parte",
+          "monto": 1183887.17,
+          "fechaPago": "2026-06-26"
+        },
+        {
+          "nota": "Transferencia, parte",
+          "monto": 600000,
+          "fechaPago": "2026-06-26"
+        },
+        {
+          "nota": "Transferencia, termina de cancelar fecha",
+          "monto": 90791.83,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Santi N",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [
         {
           "nombre": "Uber Fiama",
           "monto": 10000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 8,
@@ -1165,15 +1396,29 @@ const DEFAULT_DB = {
       "evento": "Porteña",
       "recaudado": 1000000,
       "estadoRecaudado": "PAGADO",
-      "pptoPR": 0,
       "pptoDJ": 0,
       "pptoPH": 0,
       "notas": "Gastos corren x Afo",
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 1000000,
+      "pagosBoliche": [
+        {
+          "nota": "Mismo dia",
+          "monto": 1000000,
+          "fechaPago": ""
+        }
+      ],
       "pr": [],
       "dj": [],
       "ph": [],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 9,
@@ -1192,19 +1437,22 @@ const DEFAULT_DB = {
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 300000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 300000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [],
@@ -1212,10 +1460,18 @@ const DEFAULT_DB = {
         {
           "nombre": "Pauta (mama pato)",
           "monto": 900000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": [],
+      "compartCristian": false,
+      "asistencia": []
     },
     {
       "id": 10,
@@ -1228,52 +1484,68 @@ const DEFAULT_DB = {
       "pptoDJ": 0,
       "pptoPH": 0,
       "notas": "Inversion, no quedo ganancia.",
+      "compartCristian": false,
+      "asistencia": [],
       "totalBoliche": 2517200,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Inversion, no queda ganancia",
+          "monto": 2517200,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "Mati",
           "monto": 250000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
@@ -1283,7 +1555,12 @@ const DEFAULT_DB = {
           "monto": 12000,
           "estado": "P"
         }
-      ]
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 11,
@@ -1296,61 +1573,83 @@ const DEFAULT_DB = {
       "pptoDJ": 0,
       "pptoPH": 0,
       "notas": "Inversión. No queda ganancia.",
+      "compartCristian": false,
+      "asistencia": [],
       "totalBoliche": 702500,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Inversion, no queda ganancia",
+          "monto": 702500,
+          "fechaPago": ""
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fede Bugari",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "NP"
+          "estado": "NP",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "Mati",
           "monto": 250000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 12,
@@ -1363,71 +1662,95 @@ const DEFAULT_DB = {
       "pptoDJ": 800000,
       "pptoPH": 350000,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
       "totalBoliche": 1502000,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Transferencia, cancela total",
+          "monto": 1502000,
+          "fechaPago": "2026-07-03"
+        }
+      ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 150000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fede Bugari",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Santi N",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 350000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 13,
@@ -1446,50 +1769,65 @@ const DEFAULT_DB = {
         {
           "nombre": "Molfe",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fede Bugari",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "PH",
           "monto": 250000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": [],
+      "compartCristian": false,
+      "asistencia": []
     },
     {
       "id": 14,
@@ -1502,78 +1840,107 @@ const DEFAULT_DB = {
       "pptoDJ": 800000,
       "pptoPH": 0,
       "notas": "",
+      "compartCristian": false,
+      "asistencia": [],
       "totalBoliche": 2181158.26,
       "pagosBoliche": [
         {
           "nota": "03/07",
           "monto": 307208.17,
-          "fechaPago": ""
+          "fechaPago": "2026-07-03"
+        },
+        {
+          "nota": "Transferencia 14/07",
+          "monto": 1500000,
+          "fechaPago": "2026-07-17"
+        },
+        {
+          "nota": "Transfe PATO",
+          "monto": 102282.48,
+          "fechaPago": "2026-07-17"
+        },
+        {
+          "nota": "Transfe ALE",
+          "monto": 271667.61,
+          "fechaPago": "2026-07-19"
         }
       ],
       "pr": [
         {
           "nombre": "Molfe",
           "monto": 150000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Maga",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fiama",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Nico W",
           "monto": 100000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fede Bugari",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Santi N",
           "monto": 50000,
-          "estado": "NP"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Lara",
           "monto": 50000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 300000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Mcrone",
           "monto": 300000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         },
         {
           "nombre": "Bixha",
           "monto": 200000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
           "nombre": "Mati",
           "monto": 400000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
@@ -1583,7 +1950,12 @@ const DEFAULT_DB = {
           "monto": 55000,
           "estado": "P"
         }
-      ]
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 15,
@@ -1591,17 +1963,24 @@ const DEFAULT_DB = {
       "fechaISO": "2026-07-18",
       "mes": "JULIO",
       "evento": "ESCOBAR",
-      "recaudado": 1100000,
+      "recaudado": 1095000,
       "estadoRecaudado": "PARCIAL",
       "pptoDJ": 0,
       "pptoPH": 0,
       "notas": "SET (Pato)",
-      "totalBoliche": 1100000,
+      "compartCristian": false,
+      "asistencia": [],
+      "totalBoliche": 1095000,
       "pagosBoliche": [
         {
           "nota": "Tranfe Pato",
           "monto": 495000,
           "fechaPago": "2026-07-03"
+        },
+        {
+          "nota": "Transfe Pato",
+          "monto": 600000,
+          "fechaPago": "2026-07-18"
         }
       ],
       "pr": [],
@@ -1609,12 +1988,18 @@ const DEFAULT_DB = {
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "NP"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [],
       "gastos": [],
-      "comisiones": []
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     },
     {
       "id": 16,
@@ -1640,24 +2025,440 @@ const DEFAULT_DB = {
         {
           "nombre": "Mcrone",
           "monto": 500000,
-          "estado": "P"
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "ph": [],
       "gastos": [],
-      "comisiones": []
-    }
-  ],
-  "boliches": [
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": [],
+      "compartCristian": false,
+      "asistencia": []
+    },
     {
-      "id": 1783474735385,
-      "nombre": "Cristian",
-      "monto": 4150000,
-      "fecha": "22/03; 23/03; 14/06",
-      "estado": "NP",
-      "notas": "HACHE; CHN; LANUS"
+      "id": 17,
+      "fecha": "08/07",
+      "fechaISO": "2026-07-08",
+      "mes": "JULIO",
+      "evento": "Forest",
+      "recaudado": 2579502,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 0,
+      "pptoPH": 0,
+      "notas": "",
+      "compartCristian": true,
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
+      "totalBoliche": 2579502,
+      "pagosBoliche": [],
+      "pr": [
+        {
+          "nombre": "Santi N",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 100000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Lil Paper",
+          "monto": 600000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Vixxen",
+          "monto": 200000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "Mati",
+          "monto": 400000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "gastos": [
+        {
+          "nombre": "Consola",
+          "monto": 130000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "comisiones": [
+        {
+          "nombre": "Nico W",
+          "monto": 46000,
+          "estado": "P"
+        }
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
+    },
+    {
+      "id": 18,
+      "fecha": "04/07",
+      "fechaISO": "2026-07-04",
+      "mes": "JULIO",
+      "evento": "Cruza",
+      "recaudado": 2228332.39,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 800000,
+      "pptoPH": 400000,
+      "notas": "",
+      "compartCristian": false,
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
+      "totalBoliche": 2228332.39,
+      "pagosBoliche": [
+        {
+          "nota": "Transfe PATO",
+          "monto": 2228332.39,
+          "fechaPago": "2026-07-17"
+        }
+      ],
+      "pr": [
+        {
+          "nombre": "Lara",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Santi N",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fix",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Lil Paper",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        },
+        {
+          "nombre": "Mcrone",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "PH",
+          "monto": 400000,
+          "estado": "NP",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "gastos": [
+        {
+          "nombre": "Fiama",
+          "monto": 8400,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "comisiones": [
+        {
+          "nombre": "Fix",
+          "monto": 7250,
+          "estado": "P"
+        },
+        {
+          "nombre": "Fiama",
+          "monto": 280000,
+          "estado": "P"
+        },
+        {
+          "nombre": "Santi N",
+          "monto": 40000,
+          "estado": "P"
+        }
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
+    },
+    {
+      "id": 19,
+      "fecha": "09/07",
+      "fechaISO": "2026-07-09",
+      "mes": "JULIO",
+      "evento": "Cruza",
+      "recaudado": 1772992.72,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 800000,
+      "pptoPH": 400000,
+      "notas": "POLO",
+      "compartCristian": false,
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
+      "totalBoliche": 1772992.72,
+      "pagosBoliche": [],
+      "pr": [
+        {
+          "nombre": "Santi N",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 100000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Lil Paper",
+          "monto": 300000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        },
+        {
+          "nombre": "Mcrone",
+          "monto": 300000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        },
+        {
+          "nombre": "Mili (INVITADA)",
+          "monto": 200000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "PH",
+          "monto": 400000,
+          "estado": "NP",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "gastos": [],
+      "comisiones": [
+        {
+          "nombre": "Nico W",
+          "monto": 39000,
+          "estado": "P"
+        }
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
+    },
+    {
+      "id": 20,
+      "fecha": "11/07",
+      "fechaISO": "2026-07-11",
+      "mes": "JULIO",
+      "evento": "Cruza",
+      "recaudado": 2890016.53,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 800000,
+      "pptoPH": 400000,
+      "notas": "",
+      "compartCristian": false,
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
+      "totalBoliche": 2890016.53,
+      "pagosBoliche": [],
+      "pr": [
+        {
+          "nombre": "Lara",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fix",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 100000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Lil Paper",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        },
+        {
+          "nombre": "Mcrone",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "PH",
+          "monto": 400000,
+          "estado": "NP",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "gastos": [],
+      "comisiones": [
+        {
+          "nombre": "Fix",
+          "monto": 7250,
+          "estado": "P"
+        }
+      ],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
+    },
+    {
+      "id": 21,
+      "fecha": "02/07",
+      "fechaISO": "2026-07-02",
+      "mes": "JULIO",
+      "evento": "CHN",
+      "recaudado": 0,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 0,
+      "pptoPH": 0,
+      "notas": "",
+      "compartCristian": false,
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
+      "totalBoliche": 0,
+      "pagosBoliche": [],
+      "pr": [
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Santi N",
+          "monto": 25000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Lara",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Mcrone",
+          "monto": 200000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Lil Paper",
+          "monto": 200000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "PH",
+          "monto": 250000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "gastos": [],
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
+      "operativos": [],
+      "merch": []
     }
   ],
+  "boliches": [],
   "mensuales": {
     "MAYO": [
       {
@@ -1689,7 +2490,7 @@ const DEFAULT_DB = {
       {
         "nombre": "Mica cm",
         "monto": 700000,
-        "estado": "NP",
+        "estado": "P",
         "notas": "Mayo"
       },
       {
@@ -1710,6 +2511,80 @@ const DEFAULT_DB = {
         "estado": "P",
         "notas": "Mayo"
       }
+    ],
+    "JULIO": [
+      {
+        "nombre": "Zoel CM",
+        "monto": 450000,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Anto Fantini",
+        "monto": 750000,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Juan",
+        "monto": 900000,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Flor",
+        "monto": 200000,
+        "estado": "NP",
+        "notas": "20/07 $200.000 (Ale)"
+      },
+      {
+        "nombre": "Molfe",
+        "monto": 1000000,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Maga",
+        "monto": 500000,
+        "estado": "NP",
+        "notas": "20/07 $500.000 (Tomi)"
+      },
+      {
+        "nombre": "",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Fiama",
+        "monto": 400000,
+        "estado": "NP",
+        "notas": "Tomi adelanto $100.000"
+      },
+      {
+        "nombre": "",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Bruno Publi",
+        "monto": 350000,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      }
     ]
   }
 };
@@ -1727,6 +2602,7 @@ function normalizeFecha(f){
     (f[cat]||[]).forEach(item=>{ if(!item.quienPaga) item.quienPaga='Malianteo'; });
   });
   if(typeof f.compartCristian!=='boolean') f.compartCristian=false;
+  if(!f.estadoCristian) f.estadoCristian='NP';
   if(!Array.isArray(f.asistencia)) f.asistencia=[];
   return f;
 }
@@ -1734,6 +2610,8 @@ function normalizeDB(db){
   (db.fechas||[]).forEach(normalizeFecha);
   if(!db.boliches)db.boliches=[];
   if(!db.mensuales)db.mensuales={};
+  if(!db.deptos)db.deptos={};
+  if(!db.cristianExtra)db.cristianExtra=[];
   return db;
 }
 function loadDB(){
@@ -1798,7 +2676,7 @@ let DB = loadDB();
 // ============================================================
 // UTILS
 // ============================================================
-const PERSONAS = ['Anto Fantini','Baby Cue','Bixha','Bruno publi','DJ Invitado','Eli','Fede Bugari','Fiama','Fix','Flor','Juan','Juan DJ','Lil Paper','Maga','Mati O','Mati PH','Mcrone','Mica cm','Molfe','Naccarato','Nico W','Santi N','Valen C','Vixxen','Z'];
+const PERSONAS = ['Anto Fantini','Baby Cue','Bixha','Bruno publi','Diseñador Juan','DJ Invitado','Eli','Fede Bugari','Fiama','Fix','Flor','Juan','Juan DJ','Lil Paper','Maga','Mati O','Mati PH','Mcrone','Mica cm','Molfe','Naccarato','Nico W','Santi N','Valen C','Vixxen','Z'];
 const VENUES = ['Cruza','CHN','Porteña','Lanús','NQN','Aeropuerto','Forest'];
  
 function fmt(n){
@@ -1848,7 +2726,14 @@ function restoPendienteBoliche(f){
   return Math.max(0, total-cobrado);
 }
 function totalPendiente(f){return pendientes(f).reduce((s,p)=>s+p.monto,0)}
-function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes)}
+function parseFechaOrden(f){
+  if(f.fechaISO) return new Date(f.fechaISO).getTime();
+  // fallback: "DD/MM" -> orden aproximado dentro del mes
+  const m=(f.fecha||'').match(/^(\d{1,2})\/(\d{1,2})/);
+  if(m) return parseInt(m[2])*100+parseInt(m[1]);
+  return 0;
+}
+function getFechasByMes(mes){return DB.fechas.filter(f=>f.mes===mes).sort((a,b)=>parseFechaOrden(a)-parseFechaOrden(b))}
 function nextId(){return DB.fechas.length?Math.max(...DB.fechas.map(f=>f.id))+1:1}
 function getMensualesByMes(mes){return (DB.mensuales&&DB.mensuales[mes])?DB.mensuales[mes]:[]}
 function totalMensuales(mes){return getMensualesByMes(mes).reduce((s,m)=>s+(m.monto||0),0)}
@@ -2012,7 +2897,7 @@ function showFechasTab(btn, id){
   document.querySelectorAll('#tf-fechas,#tf-mensuales').forEach(t=>t.style.display='none');
   btn.classList.add('active');
   document.getElementById(id).style.display='block';
-  if(id==='tf-mensuales') renderMensuales();
+  if(id==='tf-mensuales') renderMensualPagina();
 }
 function showTab(btn, id){
   document.querySelectorAll('#page-pagos .tab').forEach(t=>t.classList.remove('active'));
@@ -2026,23 +2911,36 @@ function showTab(btn, id){
 // ============================================================
 // DASHBOARD
 // ============================================================
+const MESES_ARR=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+function esUltimaSemanaMesActual(){
+  const hoy=new Date();
+  const diasDelMes=new Date(hoy.getFullYear(), hoy.getMonth()+1, 0).getDate();
+  return hoy.getDate() >= (diasDelMes-6); // últimos 7 días del mes calendario
+}
 function renderDashboard(){
   const mes=document.getElementById('dash-mes').value;
   const fechas=getFechasByMes(mes);
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
   const totalGastadoFechas=fechas.reduce((s,f)=>s+costoParaBalance(f),0);
   const totalMens=totalMensuales(mes);
-  const totalGastado=totalGastadoFechas+totalMens;
+  const totalDeptos=totalDeptosMesMalianteo(mes);
+  const totalGastado=totalGastadoFechas+totalMens+totalDeptos;
   const balance=totalRecaudado-totalGastado;
   const rentabilidad=totalRecaudado?Math.round((balance/totalRecaudado)*100):0;
-  const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0)+pendienteMensuales(mes);
+  // El pendiente de sueldos mensuales solo se muestra en el dashboard durante la última semana
+  // del mes en curso (antes de eso, pueden estar en proceso de ajuste). Si se mira un mes que
+  // no es el actual (ya cerrado o futuro), se muestra siempre.
+  const esMesEnCurso = mes===MESES_ARR[new Date().getMonth()];
+  const mostrarPendMensual = esMesEnCurso ? esUltimaSemanaMesActual() : true;
+  const pendMensualDash = mostrarPendMensual ? pendienteMensuales(mes) : 0;
+  const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0)+pendMensualDash;
  
   document.getElementById('dash-metrics').innerHTML=`
     <div class="metric"><div class="metric-label">Fechas</div><div class="metric-value blue">${fechas.length}</div><div class="metric-sub">${mes}</div></div>
     <div class="metric"><div class="metric-label">Recaudado</div><div class="metric-value green">${fmt(totalRecaudado)}</div><div class="metric-sub">total del mes</div></div>
     <div class="metric"><div class="metric-label">Gastado</div><div class="metric-value red">${fmt(totalGastado)}</div><div class="metric-sub">staff + extras + sueldos</div></div>
     <div class="metric"><div class="metric-label">Balance neto</div><div class="metric-value ${balance>=0?'green':'red'}">${fmt(balance)}</div><div class="metric-sub">${rentabilidad}% rentabilidad</div></div>
-    <div class="metric"><div class="metric-label">Pendiente pago</div><div class="metric-value ${pendTotal>0?'red':'green'}">${fmt(pendTotal)}</div><div class="metric-sub">sin pagar</div></div>
+    <div class="metric"><div class="metric-label">Pendiente pago</div><div class="metric-value ${pendTotal>0?'red':'green'}">${fmt(pendTotal)}</div><div class="metric-sub">${esMesEnCurso&&!mostrarPendMensual?'sueldos mensuales se suman en la última semana':'sin pagar'}</div></div>
   `;
  
   // pendientes
@@ -2054,6 +2952,7 @@ function renderDashboard(){
     });
   });
   getMensualesByMes(mes).filter(m=>m.estado==='NP'&&m.monto>0).forEach(m=>{
+    if(!mostrarPendMensual)return; // los sueldos mensuales solo aparecen como pendientes en la última semana del mes en curso
     if(!deudores[m.nombre])deudores[m.nombre]=[];
     deudores[m.nombre].push({fecha:'Sueldo mensual',monto:m.monto});
   });
@@ -2267,8 +3166,6 @@ function editFecha(id){
 function loadFechaIntoForm(f){
   document.getElementById('nf-evento').value=f.evento||'';
   document.getElementById('nf-mes').value=f.mes||'MAYO';
-  document.getElementById('nf-recaudado').value=f.recaudado||0;
-  document.getElementById('nf-estado-recaudado').value=f.estadoRecaudado||'ADEUDA';
   document.getElementById('nf-ppto-dj').value=f.pptoDJ||0;
   document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
   document.getElementById('nf-notas').value=f.notas||'';
@@ -2278,14 +3175,12 @@ function loadFechaIntoForm(f){
   document.getElementById('pagos-boliche-rows').innerHTML='';
   (f.pagosBoliche||[]).forEach(p=>addPagoBolicheRow(p));
   if(f.fechaISO)document.getElementById('nf-fecha').value=f.fechaISO;
-  ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows','pauta-rows','diseno-rows','contenido-rows','operativos-rows','merch-rows'].forEach(id=>document.getElementById(id).innerHTML='');
+  ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows','contenido-rows','operativos-rows','merch-rows'].forEach(id=>document.getElementById(id).innerHTML='');
   (f.pr||[]).forEach(p=>addStaffRow('pr-rows','PR',p));
   (f.dj||[]).forEach(p=>addStaffRow('dj-rows','DJ',p));
   (f.ph||[]).forEach(p=>addPhRow(p));
   (f.gastos||[]).forEach(p=>addGastoRow(p));
   (f.comisiones||[]).forEach(p=>addComisionRow(p));
-  (f.pauta||[]).forEach(p=>addPautaRow(p));
-  (f.diseno||[]).forEach(p=>addDisenoRow(p));
   (f.contenido||[]).forEach(p=>addContenidoRow(p));
   (f.operativos||[]).forEach(p=>addOperativoRow(p));
   (f.merch||[]).forEach(p=>addMerchRow(p));
@@ -2374,7 +3269,7 @@ function guardarBoliche(){
   toast('Deuda guardada');
 }
 // Personal con sueldo fijo mensual (tope, no cobra por fecha): solo se marca asistencia
-const PERSONAL_FIJO = ['Maga','Molfe','Zeta','Anto Fantini','Nico W','Fiama','Fix','Bruno','Flor','Zoel','Fede B'];
+const PERSONAL_FIJO = ['Maga','Molfe','Fiama'];
 // PAGOS MENSUALES FIJOS
 const MENSUALES_FIJOS = ['Mica cm','Anto Fantini','Juan','Flor'];
 // Montos mensuales acordados por persona/concepto, para comparar contra lo efectivamente pagado
@@ -2451,39 +3346,195 @@ function guardarMensuales(){
   toast('Pagos mensuales guardados ✓');
 }
  
+// DEPTO PUBLICIDAD / DEPTO DISEÑO — gastos del mes, no atados a una fecha puntual
+const DEPTO_LABELS={publicidad:'Publicidad',pauta:'Pauta',diseno:'Diseño'};
+function getDeptos(mes){
+  if(!DB.deptos)DB.deptos={};
+  if(!DB.deptos[mes])DB.deptos[mes]={publicidad:[],pauta:[],diseno:[]};
+  if(!DB.deptos[mes].publicidad)DB.deptos[mes].publicidad=[];
+  if(!DB.deptos[mes].pauta)DB.deptos[mes].pauta=[];
+  if(!DB.deptos[mes].diseno)DB.deptos[mes].diseno=[];
+  return DB.deptos[mes];
+}
+function totalDepto(mes,tipo){ return getDeptos(mes)[tipo].reduce((s,p)=>s+p.monto,0); }
+// Solo lo que efectivamente afronta Malianteo (misma lógica que "¿Quién paga?" en las fechas)
+function totalDeptoMalianteo(mes,tipo){
+  return getDeptos(mes)[tipo].filter(p=>(p.quienPaga||'Malianteo')==='Malianteo').reduce((s,p)=>s+p.monto,0);
+}
+function totalDeptosMesMalianteo(mes){
+  return totalDeptoMalianteo(mes,'publicidad')+totalDeptoMalianteo(mes,'pauta')+totalDeptoMalianteo(mes,'diseno');
+}
+function renderDeptoRows(tipo){
+  const mes=document.getElementById('mensual-mes').value;
+  const items=getDeptos(mes)[tipo];
+  const containerId='depto-'+tipo+'-rows';
+  document.getElementById(containerId).innerHTML='';
+  items.forEach(data=>addStaffRow(containerId,DEPTO_LABELS[tipo],data));
+}
+function addDeptoRow(tipo){
+  addStaffRow('depto-'+tipo+'-rows',DEPTO_LABELS[tipo],{});
+}
+function guardarDeptos(tipo){
+  const mes=document.getElementById('mensual-mes').value;
+  getDeptos(mes)[tipo]=parseRows('depto-'+tipo+'-rows');
+  saveDB();
+  toast('Depto '+DEPTO_LABELS[tipo]+' guardado ✓');
+}
+function showMensualSubTab(btn,id){
+  document.querySelectorAll('#tf-mensuales .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#ms-publicidad,#ms-pauta,#ms-diseno,#ms-sueldos').forEach(t=>t.style.display='none');
+  btn.classList.add('active');
+  document.getElementById(id).style.display='block';
+}
+function renderMensualPagina(){
+  renderMensuales();
+  renderDeptoRows('publicidad');
+  renderDeptoRows('pauta');
+  renderDeptoRows('diseno');
+}
+ 
 // Fechas marcadas "comparte con Cristian": se muestra lo recaudado de esa fecha como lo que Cristian debe a Malianteo
 function renderDeudaCristian(){
   const el=document.getElementById('cristian-deudas-list');
   if(!el)return;
-  const fechas=DB.fechas.filter(f=>f.compartCristian);
-  if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas marcadas "Comparte con Cristian"</div>';return;}
-  const total=fechas.reduce((s,f)=>s+(f.recaudado||0),0);
-  el.innerHTML=fechas.map(f=>`<div class="person-row">
-      <div><div class="person-name">${f.fecha} — ${f.evento} <span style="color:var(--text3);font-size:11px">${f.mes}</span></div>
-      <div class="person-sub">Cristian debe a Malianteo: recaudado de esa fecha</div></div>
-      <div class="person-monto red">${fmt(f.recaudado||0)}</div>
-    </div>`).join('')
+  const autoItems=DB.fechas.filter(f=>f.compartCristian).map(f=>({
+    tipo:'auto', id:f.id, concepto:f.evento, fecha:f.fecha, mes:f.mes,
+    monto:f.recaudado||0, estado:f.estadoCristian||'NP'
+  }));
+  const manualItems=(DB.cristianExtra||[]).map(c=>({
+    tipo:'manual', id:c.id, concepto:c.concepto, fecha:c.fecha, mes:c.mes,
+    monto:c.monto||0, estado:c.estado||'NP', notas:c.notas
+  }));
+  const todos=[...autoItems,...manualItems];
+  const pendientes=todos.filter(x=>x.estado!=='P');
+  const saldadas=todos.filter(x=>x.estado==='P');
+  const total=pendientes.reduce((s,x)=>s+x.monto,0);
+ 
+  if(!todos.length){
+    el.innerHTML='<div class="empty">Sin deudas de Cristian cargadas</div>';
+    return;
+  }
+  const filaAuto=x=>`<div class="person-row">
+      <div><div class="person-name">${x.fecha?x.fecha+' — ':''}${x.concepto} <span style="color:var(--text3);font-size:11px">${x.mes||''}</span></div>
+      ${x.notas?`<div class="person-sub">${x.notas}</div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="person-monto ${x.estado==='P'?'green':'red'}">${fmt(x.monto)}</span>
+        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleDeudaCristian('${x.tipo}',${x.id})">${x.estado==='P'?'Reabrir':'Marcar pagada'}</button>
+      </div>
+    </div>`;
+  const filaManual=x=>`<div class="person-row">
+      <div><div class="person-name">${x.fecha?x.fecha+' — ':''}${x.concepto} <span style="color:var(--text3);font-size:11px">${x.mes||''}</span></div>
+      ${x.notas?`<div class="person-sub">${x.notas}</div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="person-monto ${x.estado==='P'?'green':'red'}">${fmt(x.monto)}</span>
+        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleDeudaCristian('${x.tipo}',${x.id})">${x.estado==='P'?'Reabrir':'Marcar pagada'}</button>
+        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="editarDeudaCristian(${x.id})">✎ Editar</button>
+        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px;color:var(--danger)" onclick="eliminarDeudaCristian(${x.id})">✕</button>
+      </div>
+    </div>`;
+  const fila=x=>x.tipo==='manual'?filaManual(x):filaAuto(x);
+  el.innerHTML = (pendientes.length?pendientes.map(fila).join(''):'<div class="empty">Sin pendientes ✓</div>')
     + `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
       <span style="font-size:12px;color:var(--text3);font-weight:600">Total Cristian debe a Malianteo</span>
       <span style="font-family:var(--font-mono);color:var(--danger)">${fmt(total)}</span>
-    </div>`;
+    </div>`
+    + (saldadas.length?`<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Ya saldadas</div>
+        ${saldadas.map(fila).join('')}
+      </div>`:'');
+}
+function toggleDeudaCristian(tipo,id){
+  if(tipo==='auto'){
+    const f=DB.fechas.find(x=>x.id===id);
+    if(!f)return;
+    f.estadoCristian = f.estadoCristian==='P' ? 'NP' : 'P';
+  } else {
+    const c=(DB.cristianExtra||[]).find(x=>x.id===id);
+    if(!c)return;
+    c.estado = c.estado==='P' ? 'NP' : 'P';
+  }
+  saveDB();
+  renderDeudaCristian();
+}
+function addDeudaCristian(){
+  document.getElementById('cristian-form').style.display='block';
+  document.getElementById('cr-editid').value='';
+  ['cr-concepto','cr-fecha','cr-monto','cr-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cr-estado').value='NP';
+}
+function editarDeudaCristian(id){
+  const c=(DB.cristianExtra||[]).find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById('cristian-form').style.display='block';
+  document.getElementById('cr-editid').value=id;
+  document.getElementById('cr-concepto').value=c.concepto||'';
+  document.getElementById('cr-fecha').value=c.fecha||'';
+  document.getElementById('cr-mes').value=c.mes||'MAYO';
+  document.getElementById('cr-monto').value=c.monto||0;
+  document.getElementById('cr-estado').value=c.estado||'NP';
+  document.getElementById('cr-notas').value=c.notas||'';
+  document.getElementById('cristian-form').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function eliminarDeudaCristian(id){
+  if(!confirm('¿Borrar esta deuda de Cristian?'))return;
+  DB.cristianExtra=(DB.cristianExtra||[]).filter(x=>x.id!==id);
+  saveDB();
+  renderDeudaCristian();
+  toast('Deuda de Cristian borrada ✓');
+}
+function guardarDeudaCristian(){
+  const concepto=document.getElementById('cr-concepto').value;
+  if(!concepto){alert('Ingresá un concepto o evento');return;}
+  const editId=document.getElementById('cr-editid').value;
+  const datos={
+    concepto,
+    fecha:document.getElementById('cr-fecha').value,
+    mes:document.getElementById('cr-mes').value,
+    monto:parseFloat(document.getElementById('cr-monto').value)||0,
+    estado:document.getElementById('cr-estado').value,
+    notas:document.getElementById('cr-notas').value
+  };
+  if(!DB.cristianExtra)DB.cristianExtra=[];
+  if(editId){
+    const c=DB.cristianExtra.find(x=>x.id===parseInt(editId));
+    if(c)Object.assign(c,datos);
+  } else {
+    DB.cristianExtra.push({id:Date.now(),...datos});
+  }
+  saveDB();
+  document.getElementById('cristian-form').style.display='none';
+  document.getElementById('cr-editid').value='';
+  ['cr-concepto','cr-fecha','cr-monto','cr-notas'].forEach(id=>document.getElementById(id).value='');
+  renderDeudaCristian();
+  toast('Deuda de Cristian guardada ✓');
 }
 function renderRecaudadoBoliches(){
   const el=document.getElementById('recaudado-boliches-list');
+  const elCob=document.getElementById('recaudado-boliches-cobrado-list');
   if(!el)return;
-  const grupos={};
+  const gruposPend={};
+  const cobradas=[];
   DB.fechas.forEach(f=>{
     const total=f.totalBoliche||f.recaudado||0;
     if(!total)return;
-    if(!grupos[f.evento])grupos[f.evento]=[];
-    grupos[f.evento].push(f);
+    const resto=restoPendienteBoliche(f);
+    if(resto>0){
+      if(!gruposPend[f.evento])gruposPend[f.evento]=[];
+      gruposPend[f.evento].push(f);
+    } else {
+      cobradas.push(f);
+    }
   });
-  const venues=Object.keys(grupos).sort();
-  if(!venues.length){el.innerHTML='<div class="empty">Sin recaudación cargada todavía</div>';return;}
+  const venues=Object.keys(gruposPend).sort();
   const estadoLabel={'ADEUDA':'🔴 Adeuda','PARCIAL':'🔶 Parcial','PAGADO':'✅ Pagado',undefined:'🔴 Adeuda'};
   const estadoColor={'ADEUDA':'var(--danger)','PARCIAL':'var(--warning)','PAGADO':'var(--success)',undefined:'var(--danger)'};
-  el.innerHTML=venues.map(v=>{
-    const fechas=grupos[v];
+  if(!venues.length){
+    el.innerHTML='<div class="empty">Sin pendientes de cobro ✓</div>';
+  } else {
+    el.innerHTML=venues.map(v=>{
+    const fechas=gruposPend[v];
     const totalRec=fechas.reduce((s,f)=>s+(f.totalBoliche||f.recaudado||0),0);
     const totalPend=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
     return `<div class="fecha-block" style="margin-bottom:10px">
@@ -2491,7 +3542,7 @@ function renderRecaudadoBoliches(){
         <div class="fecha-hdr-left"><span class="fecha-hdr-title">${v}</span></div>
         <div class="fecha-hdr-right">
           <span style="font-size:11px;color:var(--text2)">Total: ${fmt(totalRec)}</span>
-          ${totalPend>0?`<span class="badge badge-np">Pend: ${fmt(totalPend)}</span>`:'<span class="badge badge-p">Al día</span>'}
+          <span class="badge badge-np">Pend: ${fmt(totalPend)}</span>
           <svg id="chev-b${v.replace(/\s/g,'')}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </div>
@@ -2508,7 +3559,7 @@ function renderRecaudadoBoliches(){
             </div>
             <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2)">
               <span>Total: ${fmt(total)} · Cobrado: <span style="color:var(--success)">${fmt(cobrado)}</span></span>
-              <span style="color:${resto>0?'var(--danger)':'var(--success)'}">Pendiente: ${fmt(resto)}</span>
+              <span style="color:var(--danger)">Pendiente: ${fmt(resto)}</span>
             </div>
             ${(f.pagosBoliche||[]).length>0?`<div style="margin-top:6px;padding-left:8px;border-left:2px solid var(--border2)">
               ${(f.pagosBoliche||[]).map(p=>`<div style="font-size:11px;color:var(--text3);display:flex;justify-content:space-between;padding:2px 0">
@@ -2521,44 +3572,93 @@ function renderRecaudadoBoliches(){
       </div>
     </div>`;
   }).join('');
+  }
+  if(elCob){
+    elCob.innerHTML = cobradas.length===0
+      ? '<div class="empty">Sin fechas cobradas todavía</div>'
+      : cobradas.sort((a,b)=>parseFechaOrden(b)-parseFechaOrden(a)).map(f=>{
+          const total=f.totalBoliche||f.recaudado||0;
+          return `<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="font-weight:500;font-size:13px">${f.evento} — ${f.fecha} · ${f.mes}</span>
+            </div>
+            <span class="badge badge-p">✅ ${fmt(total)}</span>
+          </div>`;
+        }).join('');
+  }
+}
+function toggleRecaudadoCobrado(){
+  const el=document.getElementById('recaudado-boliches-cobrado-list');
+  const chev=document.getElementById('chev-recaudado-cobrado');
+  if(!el)return;
+  const abierto=el.style.display!=='none';
+  el.style.display=abierto?'none':'block';
+  if(chev)chev.style.transform=abierto?'':'rotate(180deg)';
 }
 function renderBoliches(){
   const el=document.getElementById('boliches-list');
+  const elAb=document.getElementById('boliches-abonadas-list');
   if(!el)return;
-  if(!DB.boliches.length){el.innerHTML='<div class="empty">Sin deudas de boliches cargadas</div>';return;}
   const badgeCls={'P':'badge-p','NP':'badge-np','parcial':'badge-pc'};
-  const total=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
-  // agrupar por boliche
-  const grupos={};
-  DB.boliches.forEach(b=>{
-    if(!grupos[b.nombre])grupos[b.nombre]=[];
-    grupos[b.nombre].push(b);
-  });
-  el.innerHTML=`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);display:flex;justify-content:space-between">
-    <span style="font-size:12px;color:var(--text3)">Total deuda boliches (pendiente)</span>
-    <span style="font-family:var(--font-mono);color:var(--danger)">${fmt(total)}</span>
-  </div>`+
-  Object.keys(grupos).map(nombre=>{
-    const items=grupos[nombre];
-    const pendGrupo=items.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
-    return `<div style="margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
-      <div style="padding:10px 14px;background:var(--bg3);display:flex;justify-content:space-between;align-items:center">
-        <strong style="font-family:var(--font-mono)">${nombre}</strong>
-        <span style="font-size:12px;color:${pendGrupo>0?'var(--danger)':'var(--success)'}">${pendGrupo>0?'Pendiente: '+fmt(pendGrupo):'✓ Al día'}</span>
-      </div>
-      ${items.map(b=>`<div class="person-row" style="padding:10px 14px">
-        <div>
-          <div class="person-name">${b.concepto||'Otro'} <span style="color:var(--text3);font-size:11px">· ${b.mes||''}${b.fecha?' · '+b.fecha:''}</span></div>
-          ${b.notas?`<div class="person-sub">${b.notas}</div>`:''}
+  const pendientes=DB.boliches.filter(b=>b.estado!=='P');
+  const abonadas=DB.boliches.filter(b=>b.estado==='P');
+  const total=pendientes.reduce((s,b)=>s+b.monto,0);
+ 
+  if(!pendientes.length){
+    el.innerHTML='<div class="empty">Sin deudas pendientes ✓</div>';
+  } else {
+    const grupos={};
+    pendientes.forEach(b=>{ if(!grupos[b.nombre])grupos[b.nombre]=[]; grupos[b.nombre].push(b); });
+    el.innerHTML=`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);display:flex;justify-content:space-between">
+      <span style="font-size:12px;color:var(--text3)">Total deuda boliches (pendiente)</span>
+      <span style="font-family:var(--font-mono);color:var(--danger)">${fmt(total)}</span>
+    </div>`+
+    Object.keys(grupos).map(nombre=>{
+      const items=grupos[nombre];
+      const pendGrupo=items.reduce((s,b)=>s+b.monto,0);
+      return `<div style="margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+        <div style="padding:10px 14px;background:var(--bg3);display:flex;justify-content:space-between;align-items:center">
+          <strong style="font-family:var(--font-mono)">${nombre}</strong>
+          <span style="font-size:12px;color:var(--danger)">Pendiente: ${fmt(pendGrupo)}</span>
         </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <span class="badge ${badgeCls[b.estado]||'badge-nt'}">${b.estado}</span>
-          <span style="font-family:var(--font-mono)">${fmt(b.monto)}</span>
-          <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Cambiar estado</button>
-        </div>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
+        ${items.map(b=>`<div class="person-row" style="padding:10px 14px">
+          <div>
+            <div class="person-name">${b.concepto||'Otro'} <span style="color:var(--text3);font-size:11px">· ${b.mes||''}${b.fecha?' · '+b.fecha:''}</span></div>
+            ${b.notas?`<div class="person-sub">${b.notas}</div>`:''}
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge ${badgeCls[b.estado]||'badge-nt'}">${b.estado}</span>
+            <span style="font-family:var(--font-mono)">${fmt(b.monto)}</span>
+            <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Cambiar estado</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+ 
+  if(elAb){
+    elAb.innerHTML = abonadas.length===0
+      ? '<div class="empty">Todavía no marcaste ninguna como pagada</div>'
+      : abonadas.map(b=>`<div class="person-row" style="padding:10px 14px">
+          <div>
+            <div class="person-name">${b.nombre} — ${b.concepto||'Otro'} <span style="color:var(--text3);font-size:11px">· ${b.mes||''}${b.fecha?' · '+b.fecha:''}</span></div>
+            ${b.notas?`<div class="person-sub">${b.notas}</div>`:''}
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge badge-p">✓ Abonada</span>
+            <span style="font-family:var(--font-mono);color:var(--success)">${fmt(b.monto)}</span>
+            <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Reabrir</button>
+          </div>
+        </div>`).join('');
+  }
+}
+function toggleAbonadas(){
+  const el=document.getElementById('boliches-abonadas-list');
+  const chev=document.getElementById('chev-abonadas');
+  if(!el)return;
+  const abierto=el.style.display!=='none';
+  el.style.display=abierto?'none':'block';
+  if(chev)chev.style.transform=abierto?'':'rotate(180deg)';
 }
 function toggleBoliche(id){
   const b=DB.boliches.find(x=>x.id===id);
@@ -2813,32 +3913,41 @@ function guardarFecha(){
   const fechaISO=fechaInput.value||''; // yyyy-mm-dd
   const fechaStr=fechaISO?fechaISO.split('-').reverse().slice(0,2).join('/'):evento;
  
+  const totalBoliche=parseFloat(document.getElementById('nf-total-boliche').value)||0;
+  const pagosBoliche=[...document.getElementById('pagos-boliche-rows').querySelectorAll('.form-row')].map(row=>{
+    const inputs=row.querySelectorAll('input[data-field]');
+    const obj={};
+    inputs.forEach(i=>{obj[i.dataset.field]=i.dataset.field==='monto'?(parseFloat(i.value)||0):i.value});
+    return obj;
+  }).filter(p=>p.monto>0);
+  const cobradoBoliche=pagosBoliche.reduce((s,p)=>s+p.monto,0);
+  const estadoRecaudadoCalc = totalBoliche>0 && cobradoBoliche>=totalBoliche ? 'PAGADO' : cobradoBoliche>0 ? 'PARCIAL' : 'ADEUDA';
+  // Pauta y Diseño ya no se cargan por fecha (pasaron a las solapas mensuales "Depto Pauta"/"Depto Diseño").
+  // Si la fecha ya tenía datos históricos ahí, los preservamos tal cual sin tocarlos.
+  const fechaExistente = editId ? DB.fechas.find(f=>f.id===editId) : null;
+ 
   const obj={
     id:editId||nextId(),
     fecha:fechaStr,
     fechaISO:fechaISO,
     mes,evento,
-    recaudado:parseFloat(document.getElementById('nf-recaudado').value)||0,
-    estadoRecaudado:document.getElementById('nf-estado-recaudado').value,
+    recaudado:totalBoliche,
+    estadoRecaudado:estadoRecaudadoCalc,
     pptoDJ:parseFloat(document.getElementById('nf-ppto-dj').value)||0,
     pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
     notas:document.getElementById('nf-notas').value,
     compartCristian:document.getElementById('nf-comparte-cristian').checked,
+    estadoCristian: fechaExistente ? (fechaExistente.estadoCristian||'NP') : 'NP',
     asistencia:[...document.querySelectorAll('.asistencia-fijo-check:checked')].map(c=>c.value),
-    totalBoliche:parseFloat(document.getElementById('nf-total-boliche').value)||0,
-    pagosBoliche:[...document.getElementById('pagos-boliche-rows').querySelectorAll('.form-row')].map(row=>{
-      const inputs=row.querySelectorAll('input[data-field]');
-      const obj={};
-      inputs.forEach(i=>{obj[i.dataset.field]=i.dataset.field==='monto'?(parseFloat(i.value)||0):i.value});
-      return obj;
-    }).filter(p=>p.monto>0),
+    totalBoliche:totalBoliche,
+    pagosBoliche:pagosBoliche,
     pr:parseRows('pr-rows'),
     dj:parseRows('dj-rows'),
     ph:parseRows('ph-rows'),
     gastos:parseRows('gasto-rows'),
     comisiones:parseRows('comision-rows'),
-    pauta:parseRows('pauta-rows'),
-    diseno:parseRows('diseno-rows'),
+    pauta: fechaExistente ? (fechaExistente.pauta||[]) : [],
+    diseno: fechaExistente ? (fechaExistente.diseno||[]) : [],
     contenido:parseRows('contenido-rows'),
     operativos:parseRows('operativos-rows'),
     merch:parseRows('merch-rows')
@@ -2852,13 +3961,12 @@ function guardarFecha(){
     DB.fechas.push(obj);
   }
   saveDB();
-  ['nf-fecha','nf-evento','nf-recaudado','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas','nf-total-boliche'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['nf-fecha','nf-evento','nf-ppto-pr','nf-ppto-dj','nf-ppto-ph','nf-notas','nf-total-boliche'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('pagos-boliche-rows').innerHTML='';
   const rb=document.getElementById('resto-boliche');if(rb)rb.innerHTML='';
-  document.getElementById('nf-estado-recaudado').value='ADEUDA';
   document.getElementById('nf-comparte-cristian').checked=false;
   renderAsistenciaFijoCheckboxes();
-  ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows','pauta-rows','diseno-rows','contenido-rows','operativos-rows','merch-rows'].forEach(id=>document.getElementById(id).innerHTML='');
+  ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows','contenido-rows','operativos-rows','merch-rows'].forEach(id=>document.getElementById(id).innerHTML='');
   ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
   toast(editId?'Fecha actualizada ✓':'Fecha guardada ✓');
 }
@@ -2872,7 +3980,8 @@ function renderReporte(){
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
   const totalGastadoFechas=fechas.reduce((s,f)=>s+costoParaBalance(f),0);
   const totalMens=totalMensuales(mes);
-  const totalGastado=totalGastadoFechas+totalMens;
+  const totalDeptos=totalDeptosMesMalianteo(mes);
+  const totalGastado=totalGastadoFechas+totalMens+totalDeptos;
   const balance=totalRecaudado-totalGastado;
   const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
   const totalBoliches=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
@@ -2913,6 +4022,8 @@ function renderReporte(){
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGastosAd)} <span style="color:var(--text3);font-size:11px">${pct(totalGastosAd,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalComisiones)} <span style="color:var(--text3);font-size:11px">${pct(totalComisiones,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Sueldos mensuales fijos</span><span class="report-v">${fmt(totalMens)} <span style="color:var(--text3);font-size:11px">${pct(totalMens,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Depto Publicidad</span><span class="report-v">${fmt(totalDeptoMalianteo(mes,'publicidad'))} <span style="color:var(--text3);font-size:11px">${pct(totalDeptoMalianteo(mes,'publicidad'),totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Depto Diseño</span><span class="report-v">${fmt(totalDeptoMalianteo(mes,'diseno'))} <span style="color:var(--text3);font-size:11px">${pct(totalDeptoMalianteo(mes,'diseno'),totalGastado)}</span></span></div>
     </div>
  
     <div class="report-section">
