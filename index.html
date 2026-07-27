@@ -385,7 +385,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   <div id="t-boliches" style="display:none">
     <div class="card">
       <div class="card-header"><span class="card-title">Lo que Malianteo adelantó (auto) — pendiente de reintegro</span></div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Suma automática de todo lo cargado por fecha con "¿Quién paga?" distinto de Malianteo (ej: PH de Cruza). No afecta tu balance. Cargalo como deuda cuando quieras empezar a trackear el reintegro.</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Suma automática de todo lo cargado por fecha con "¿Quién paga?" distinto de Malianteo (ej: PH de Cruza). No incluye DJs, porque esos se saldan directo entre el boliche y el DJ — Malianteo nunca adelanta esa plata. No afecta tu balance. Cargalo como deuda cuando quieras empezar a trackear el reintegro.</div>
       <div id="resumen-adelantos-list"></div>
     </div>
     <div class="card">
@@ -801,7 +801,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 2,
@@ -904,7 +905,8 @@ const DEFAULT_DB = {
       "merch": [],
       "compartCristian": false,
       "asistencia": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 3,
@@ -988,7 +990,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 4,
@@ -1078,7 +1081,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 5,
@@ -1173,7 +1177,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 6,
@@ -1281,7 +1286,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 7,
@@ -1394,7 +1400,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 8,
@@ -1427,7 +1434,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 9,
@@ -1481,7 +1489,8 @@ const DEFAULT_DB = {
       "merch": [],
       "compartCristian": false,
       "asistencia": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 10,
@@ -1571,7 +1580,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 11,
@@ -1661,7 +1671,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 12,
@@ -1763,7 +1774,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 13,
@@ -1841,7 +1853,8 @@ const DEFAULT_DB = {
       "merch": [],
       "compartCristian": false,
       "asistencia": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 14,
@@ -1970,7 +1983,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 15,
@@ -2015,7 +2029,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 16,
@@ -2055,7 +2070,8 @@ const DEFAULT_DB = {
       "merch": [],
       "compartCristian": false,
       "asistencia": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 17,
@@ -2132,7 +2148,8 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": []
+      "merch": [],
+      "standBy": false
     },
     {
       "id": 18,
@@ -2146,6 +2163,7 @@ const DEFAULT_DB = {
       "pptoPH": 400000,
       "notas": "",
       "compartCristian": false,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [
         "Maga",
@@ -2212,7 +2230,7 @@ const DEFAULT_DB = {
         {
           "nombre": "Fiama",
           "monto": 8400,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         }
       ],
@@ -2325,7 +2343,8 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": []
+      "merch": [],
+      "standBy": false
     },
     {
       "id": 20,
@@ -2407,7 +2426,8 @@ const DEFAULT_DB = {
       "contenido": [],
       "operativos": [],
       "merch": [],
-      "estadoCristian": "NP"
+      "estadoCristian": "NP",
+      "standBy": false
     },
     {
       "id": 21,
@@ -2421,6 +2441,7 @@ const DEFAULT_DB = {
       "pptoPH": 0,
       "notas": "",
       "compartCristian": false,
+      "standBy": true,
       "estadoCristian": "NP",
       "asistencia": [
         "Maga",
@@ -2557,7 +2578,8 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": []
+      "merch": [],
+      "standBy": false
     },
     {
       "id": 23,
@@ -2566,41 +2588,48 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "evento": "Aeropuerto",
       "recaudado": 6000000,
-      "estadoRecaudado": "ADEUDA",
+      "estadoRecaudado": "PAGADO",
       "pptoDJ": 0,
       "pptoPH": 0,
       "notas": "",
       "compartCristian": false,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [],
       "totalBoliche": 6000000,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Pago total 25/07",
+          "monto": 6000000,
+          "fechaPago": ""
+        }
+      ],
       "pr": [],
       "dj": [
         {
           "nombre": "Lil Paper",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         },
         {
           "nombre": "Santi N",
           "monto": 200000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         },
         {
           "nombre": "Juan DJ",
           "monto": 200000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         }
       ],
       "ph": [
         {
-          "nombre": "PH ",
+          "nombre": "Bruno",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         }
       ],
@@ -2613,8 +2642,8 @@ const DEFAULT_DB = {
         },
         {
           "nombre": "Viatico",
-          "monto": 0,
-          "estado": "NP",
+          "monto": 100000,
+          "estado": "P",
           "quienPaga": "Malianteo"
         }
       ],
@@ -2676,7 +2705,8 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": []
+      "merch": [],
+      "standBy": false
     },
     {
       "id": 25,
@@ -2739,7 +2769,8 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": []
+      "merch": [],
+      "standBy": false
     }
   ],
   "boliches": [
@@ -2885,7 +2916,6 @@ const DEFAULT_DB = {
   "deptos": {
     "MAYO": {
       "publicidad": [],
-      "pauta": [],
       "diseno": []
     },
     "JULIO": {
@@ -2915,7 +2945,6 @@ const DEFAULT_DB = {
           "quienPaga": "Malianteo"
         }
       ],
-      "pauta": [],
       "diseno": [
         {
           "nombre": "Juan",
@@ -2967,6 +2996,7 @@ function resumenAdelantosPorBoliche(){
   const grupos={}; // key: venue|categoria|mes
   DB.fechas.forEach(f=>{
     CATEGORIAS_CON_PAGADOR.forEach(cat=>{
+      if(cat==='dj')return; // los DJs se saldan directo entre el boliche y el DJ — Malianteo nunca adelanta esa plata
       (f[cat]||[]).forEach(item=>{
         const venue=item.quienPaga||'Malianteo';
         if(venue==='Malianteo')return;
