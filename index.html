@@ -532,6 +532,10 @@ body{min-height:100vh;display:flex;flex-direction:column}
       <input type="checkbox" id="nf-comparte-cristian" style="accent-color:var(--accent);width:14px;height:14px">
       <label style="text-transform:none;font-size:13px;color:var(--text)" for="nf-comparte-cristian">Comparte con Cristian</label>
     </div>
+    <div class="form-group" style="flex-direction:row;align-items:center;gap:8px;margin-bottom:4px">
+      <input type="checkbox" id="nf-standby" style="accent-color:var(--accent);width:14px;height:14px">
+      <label style="text-transform:none;font-size:13px;color:var(--text)" for="nf-standby">⏸ Pagos de esta fecha en stand-by (no dejó recaudado — lo pendiente no cuenta como gasto de Malianteo por ahora, solo queda como aviso)</label>
+    </div>
     <div id="ppto-section" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;background:var(--bg3);border-radius:var(--radius);margin-top:4px">
       <div class="form-group"><label>Presupuesto DJs ($)</label><input type="number" id="nf-ppto-dj" placeholder="0" oninput="actualizarVsPpto()"></div>
       <div class="form-group"><label>Presupuesto PH ($)</label><input type="number" id="nf-ppto-ph" placeholder="0" oninput="actualizarVsPpto()"></div>
@@ -2417,6 +2421,7 @@ const DEFAULT_DB = {
       "pptoPH": 0,
       "notas": "",
       "compartCristian": false,
+      "estadoCristian": "NP",
       "asistencia": [
         "Maga",
         "Molfe",
@@ -2478,8 +2483,7 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": [],
-      "estadoCristian": "NP"
+      "merch": []
     },
     {
       "id": 22,
@@ -2627,7 +2631,7 @@ const DEFAULT_DB = {
       "fechaISO": "2026-07-25",
       "mes": "JULIO",
       "evento": "Cruza",
-      "recaudado": 0,
+      "recaudado": 5201016.53,
       "estadoRecaudado": "ADEUDA",
       "pptoDJ": 800000,
       "pptoPH": 400000,
@@ -2635,7 +2639,7 @@ const DEFAULT_DB = {
       "compartCristian": false,
       "estadoCristian": "NP",
       "asistencia": [],
-      "totalBoliche": 0,
+      "totalBoliche": 5201016.53,
       "pagosBoliche": [],
       "pr": [],
       "dj": [
@@ -2740,12 +2744,14 @@ const DEFAULT_DB = {
   ],
   "boliches": [
     {
-      "id": 1783474735385,
-      "nombre": "Cristian",
-      "monto": 4150000,
-      "fecha": "22/03; 23/03; 14/06",
-      "estado": "P",
-      "notas": "HACHE; CHN; LANUS"
+      "id": 1785191773606,
+      "nombre": "Cruza",
+      "concepto": "PH",
+      "mes": "JULIO",
+      "monto": 2000000,
+      "fecha": "",
+      "estado": "NP",
+      "notas": ""
     }
   ],
   "mensuales": {
@@ -2883,7 +2889,32 @@ const DEFAULT_DB = {
       "diseno": []
     },
     "JULIO": {
-      "publicidad": [],
+      "publicidad": [
+        {
+          "nombre": "semana 1",
+          "monto": 527239.29,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "semana 2",
+          "monto": 532383.41,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "semana 3",
+          "monto": 877835.49,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "semana 4",
+          "monto": 117216.67,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
       "pauta": [],
       "diseno": [
         {
@@ -2999,6 +3030,7 @@ function normalizeFecha(f){
     (f[cat]||[]).forEach(item=>{ if(!item.quienPaga) item.quienPaga='Malianteo'; });
   });
   if(typeof f.compartCristian!=='boolean') f.compartCristian=false;
+  if(typeof f.standBy!=='boolean') f.standBy=false;
   if(!f.estadoCristian) f.estadoCristian='NP';
   if(!Array.isArray(f.asistencia)) f.asistencia=[];
   return f;
@@ -3110,7 +3142,11 @@ function totalCosto(f){return allStaff(f).reduce((s,p)=>s+p.monto,0)}
 // Solo lo marcado como "Malianteo" en el selector de "¿Quién paga?" (los ítems sin selector, como Comisiones, siempre cuentan)
 function totalCostoMalianteo(f){
   return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.pauta||[]),...(f.diseno||[]),...(f.contenido||[]),...(f.operativos||[]),...(f.merch||[])]
-    .filter(p=>(p.quienPaga||'Malianteo')==='Malianteo').reduce((s,p)=>s+p.monto,0)
+    .filter(p=>(p.quienPaga||'Malianteo')==='Malianteo')
+    // Si la fecha está en stand-by, lo que todavía NO se pagó no cuenta como gasto real
+    // (es una obligación en veremos, no plata que salió de Malianteo). Lo ya pagado sí cuenta.
+    .filter(p=>!(f.standBy && p.estado==='NP'))
+    .reduce((s,p)=>s+p.monto,0)
     + (f.comisiones||[]).reduce((s,p)=>s+p.monto,0);
 }
 function balanceMalianteo(f){
@@ -3474,6 +3510,7 @@ function renderFechas(){
           <span class="fecha-dot ${dotCls}"></span>
           <span class="fecha-hdr-title">${f.fecha}</span>
           <span class="fecha-hdr-sub">— ${f.evento} · ${f.mes}</span>
+          ${f.standBy?'<span class="badge badge-pc" title="No dejó recaudado — lo pendiente no cuenta como gasto por ahora">⏸ STAND-BY</span>':''}
         </div>
         <div class="fecha-hdr-right">
           ${f.recaudado>0?`<span style="font-size:11px;color:var(--success)">Rec: ${fmt(f.recaudado)}</span>`:''}
@@ -3575,6 +3612,7 @@ function loadFechaIntoForm(f){
   document.getElementById('nf-ppto-ph').value=f.pptoPH||0;
   document.getElementById('nf-notas').value=f.notas||'';
   document.getElementById('nf-comparte-cristian').checked=!!f.compartCristian;
+  document.getElementById('nf-standby').checked=!!f.standBy;
   renderAsistenciaFijoCheckboxes(f.asistencia||[]);
   document.getElementById('nf-total-boliche').value=f.totalBoliche||f.recaudado||0;
   document.getElementById('pagos-boliche-rows').innerHTML='';
@@ -4372,6 +4410,7 @@ function guardarFecha(){
     pptoPH:parseFloat(document.getElementById('nf-ppto-ph').value)||0,
     notas:document.getElementById('nf-notas').value,
     compartCristian:document.getElementById('nf-comparte-cristian').checked,
+    standBy:document.getElementById('nf-standby').checked,
     estadoCristian: fechaExistente ? (fechaExistente.estadoCristian||'NP') : 'NP',
     asistencia:[...document.querySelectorAll('.asistencia-fijo-check:checked')].map(c=>c.value),
     totalBoliche:totalBoliche,
@@ -4400,6 +4439,7 @@ function guardarFecha(){
   document.getElementById('pagos-boliche-rows').innerHTML='';
   const rb=document.getElementById('resto-boliche');if(rb)rb.innerHTML='';
   document.getElementById('nf-comparte-cristian').checked=false;
+  document.getElementById('nf-standby').checked=false;
   renderAsistenciaFijoCheckboxes();
   ['pr-rows','dj-rows','ph-rows','gasto-rows','comision-rows','contenido-rows','operativos-rows','merch-rows'].forEach(id=>document.getElementById(id).innerHTML='');
   ['dj-vs-ppto','ph-vs-ppto'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';});
@@ -4442,6 +4482,9 @@ function renderReporte(){
       <div class="report-kv"><span class="report-k">Gastos totales en fechas</span><span class="report-v red">${fmt(totalGastado)}</span></div>
       <div class="report-kv"><span class="report-k">Balance neto</span><span class="report-v ${balance>=0?'green':'red'}">${fmt(balance)}</span></div>
       <div class="report-kv"><span class="report-k">Rentabilidad</span><span class="report-v yellow">${rentabilidad}%</span></div>
+      ${fechas.filter(f=>f.standBy).length?`<div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2)">
+        ⏸ <strong>${fechas.filter(f=>f.standBy).length} fecha${fechas.filter(f=>f.standBy).length===1?'':'s'} en stand-by este mes</strong> (${fechas.filter(f=>f.standBy).map(f=>f.fecha+' — '+f.evento).join(', ')}) — no dejaron recaudado. Lo pendiente de PR/DJ está anotado pero no descontado del gasto de este mes; si se termina pagando, va a impactar en el balance del mes en que se resuelva.
+      </div>`:''}
     </div>
  
     <div class="report-section">
