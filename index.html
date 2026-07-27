@@ -3384,9 +3384,10 @@ function renderDashboard(){
     <div class="metric"><div class="metric-label">Pendiente pago</div><div class="metric-value ${pendTotal>0?'red':'green'}">${fmt(pendTotal)}</div><div class="metric-sub">${esMesEnCurso&&!mostrarPendMensual?'sueldos mensuales se suman en la última semana':'sin pagar'}</div></div>
   `;
  
-  // pendientes
+  // pendientes (excluye lo que esté en stand-by — no es urgente hoy)
   const deudores={};
   fechas.forEach(f=>{
+    if(f.standBy)return;
     pendientes(f).forEach(p=>{
       if(!deudores[p.nombre])deudores[p.nombre]=[];
       deudores[p.nombre].push({fecha:f.fecha,monto:p.monto});
@@ -4103,6 +4104,7 @@ function renderBoliches(){
             <span class="badge ${badgeCls[b.estado]||'badge-nt'}">${b.estado}</span>
             <span style="font-family:var(--font-mono)">${fmt(b.monto)}</span>
             <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Cambiar estado</button>
+            <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px;color:var(--danger)" onclick="eliminarBoliche(${b.id})">✕</button>
           </div>
         </div>`).join('')}
       </div>`;
@@ -4121,6 +4123,7 @@ function renderBoliches(){
             <span class="badge badge-p">✓ Abonada</span>
             <span style="font-family:var(--font-mono);color:var(--success)">${fmt(b.monto)}</span>
             <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleBoliche(${b.id})">Reabrir</button>
+            <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px;color:var(--danger)" onclick="eliminarBoliche(${b.id})">✕</button>
           </div>
         </div>`).join('');
   }
@@ -4138,6 +4141,12 @@ function toggleBoliche(id){
   if(!b)return;
   b.estado=b.estado==='NP'?'P':b.estado==='P'?'parcial':'NP';
   saveDB();renderBoliches();
+}
+function eliminarBoliche(id){
+  if(!confirm('¿Borrar esta deuda de boliche?'))return;
+  DB.boliches=DB.boliches.filter(x=>x.id!==id);
+  saveDB();renderBoliches();
+  toast('Deuda borrada ✓');
 }
  
 // ============================================================
@@ -4474,6 +4483,16 @@ function renderReporte(){
   const totalOperativos=fechas.reduce((s,f)=>(s+(f.operativos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
   const totalMerch=fechas.reduce((s,f)=>(s+(f.merch||[]).reduce((ss,p)=>ss+p.monto,0)),0);
  
+  // pendientes por persona, separando lo activo de lo que está en stand-by
+  const deudoresRep={};
+  fechas.forEach(f=>{
+    pendientes(f).forEach(p=>{
+      if(!deudoresRep[p.nombre])deudoresRep[p.nombre]={activo:0,standby:[]};
+      if(f.standBy) deudoresRep[p.nombre].standby.push({fecha:f.fecha,monto:p.monto});
+      else deudoresRep[p.nombre].activo+=p.monto;
+    });
+  });
+ 
   document.getElementById('reporte-content').innerHTML=`
     <div class="report-section">
       <h3>Resumen ejecutivo — ${mes} 2026</h3>
@@ -4485,6 +4504,24 @@ function renderReporte(){
       ${fechas.filter(f=>f.standBy).length?`<div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2)">
         ⏸ <strong>${fechas.filter(f=>f.standBy).length} fecha${fechas.filter(f=>f.standBy).length===1?'':'s'} en stand-by este mes</strong> (${fechas.filter(f=>f.standBy).map(f=>f.fecha+' — '+f.evento).join(', ')}) — no dejaron recaudado. Lo pendiente de PR/DJ está anotado pero no descontado del gasto de este mes; si se termina pagando, va a impactar en el balance del mes en que se resuelva.
       </div>`:''}
+    </div>
+ 
+    <div class="report-section">
+      <h3>Pagos pendientes (staff)</h3>
+      ${Object.keys(deudoresRep).length===0
+        ? '<div class="empty" style="padding:12px">Sin pendientes ✓</div>'
+        : Object.keys(deudoresRep).sort().map(nombre=>{
+            const d=deudoresRep[nombre];
+            const standbyTotal=d.standby.reduce((s,x)=>s+x.monto,0);
+            return `<div class="report-kv" style="flex-direction:column;align-items:flex-start;gap:2px;padding:8px 0">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <span class="report-k">${nombre}</span>
+                <span class="report-v red">${fmt(d.activo)}</span>
+              </div>
+              ${d.standby.map(x=>`<div style="font-size:11px;color:var(--text3);padding-left:4px">⏸ ${fmt(x.monto)} — ${x.fecha} está en stand-by (no dejó recaudado, no urgente)</div>`).join('')}
+            </div>`;
+          }).join('')
+      }
     </div>
  
     <div class="report-section">
