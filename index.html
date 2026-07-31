@@ -113,6 +113,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
 .person-sub{font-size:11px;color:var(--text3);margin-top:2px}
 .person-monto{font-family:var(--font-mono);font-size:13px}
 .person-monto.red{color:var(--danger)}
+.person-monto.green{color:var(--success)}
  
 /* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
@@ -191,6 +192,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .fecha-body{display:block!important}
   .card-title,.section-title,.metric-label,.tbl th,.report-k{color:#666!important}
   .tbl td,.person-row{border-color:#eee!important}
+  .page-break{page-break-before:always;break-before:page}
 }
  
 /* RESPONSIVE */
@@ -2220,7 +2222,7 @@ const DEFAULT_DB = {
       ],
       "ph": [
         {
-          "nombre": "PH",
+          "nombre": "Mati PH",
           "monto": 400000,
           "estado": "NP",
           "quienPaga": "Cruza"
@@ -2269,6 +2271,7 @@ const DEFAULT_DB = {
       "pptoPH": 400000,
       "notas": "POLO",
       "compartCristian": false,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [
         "Maga",
@@ -2325,7 +2328,7 @@ const DEFAULT_DB = {
       ],
       "ph": [
         {
-          "nombre": "PH",
+          "nombre": "Mati PH",
           "monto": 400000,
           "estado": "NP",
           "quienPaga": "Cruza"
@@ -2343,8 +2346,7 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": [],
-      "standBy": false
+      "merch": []
     },
     {
       "id": 20,
@@ -2358,6 +2360,8 @@ const DEFAULT_DB = {
       "pptoPH": 400000,
       "notas": "",
       "compartCristian": false,
+      "standBy": false,
+      "estadoCristian": "NP",
       "asistencia": [
         "Maga",
         "Molfe",
@@ -2407,7 +2411,7 @@ const DEFAULT_DB = {
       ],
       "ph": [
         {
-          "nombre": "PH",
+          "nombre": "Mati PH",
           "monto": 400000,
           "estado": "NP",
           "quienPaga": "Cruza"
@@ -2425,9 +2429,7 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": [],
-      "estadoCristian": "NP",
-      "standBy": false
+      "merch": []
     },
     {
       "id": 21,
@@ -2518,6 +2520,7 @@ const DEFAULT_DB = {
       "pptoPH": 400000,
       "notas": "",
       "compartCristian": false,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [
         "Molfe"
@@ -2528,13 +2531,13 @@ const DEFAULT_DB = {
         {
           "nombre": "Fix",
           "monto": 50000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         },
         {
           "nombre": "Fede Bugari",
           "monto": 50000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         },
         {
@@ -2569,7 +2572,7 @@ const DEFAULT_DB = {
           "nombre": "PH",
           "monto": 400000,
           "estado": "NP",
-          "quienPaga": "Cruza"
+          "quienPaga": "Malianteo"
         }
       ],
       "gastos": [],
@@ -2578,8 +2581,7 @@ const DEFAULT_DB = {
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": [],
-      "standBy": false
+      "merch": []
     },
     {
       "id": 23,
@@ -2666,6 +2668,7 @@ const DEFAULT_DB = {
       "pptoPH": 400000,
       "notas": "",
       "compartCristian": false,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [],
       "totalBoliche": 5201016.53,
@@ -2691,22 +2694,14 @@ const DEFAULT_DB = {
           "quienPaga": "Cruza"
         }
       ],
-      "ph": [
-        {
-          "nombre": "PH",
-          "monto": 400000,
-          "estado": "NP",
-          "quienPaga": "Cruza"
-        }
-      ],
+      "ph": [],
       "gastos": [],
       "comisiones": [],
       "pauta": [],
       "diseno": [],
       "contenido": [],
       "operativos": [],
-      "merch": [],
-      "standBy": false
+      "merch": []
     },
     {
       "id": 25,
@@ -2720,6 +2715,7 @@ const DEFAULT_DB = {
       "pptoPH": 0,
       "notas": "",
       "compartCristian": true,
+      "standBy": false,
       "estadoCristian": "NP",
       "asistencia": [
         "Maga",
@@ -2767,10 +2763,16 @@ const DEFAULT_DB = {
       "comisiones": [],
       "pauta": [],
       "diseno": [],
-      "contenido": [],
+      "contenido": [
+        {
+          "nombre": "CC Mati (cruza+chn)",
+          "monto": 200000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
       "operativos": [],
-      "merch": [],
-      "standBy": false
+      "merch": []
     }
   ],
   "boliches": [
@@ -2865,9 +2867,9 @@ const DEFAULT_DB = {
       },
       {
         "nombre": "Molfe",
-        "monto": 1000000,
+        "monto": 500000,
         "estado": "NP",
-        "notas": ""
+        "notas": "500000"
       },
       {
         "nombre": "Maga",
@@ -2924,25 +2926,29 @@ const DEFAULT_DB = {
           "nombre": "semana 1",
           "monto": 527239.29,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Malianteo",
+          "fechaObs": "1 -5"
         },
         {
           "nombre": "semana 2",
           "monto": 532383.41,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Malianteo",
+          "fechaObs": "6 - 12"
         },
         {
           "nombre": "semana 3",
           "monto": 877835.49,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Malianteo",
+          "fechaObs": "13 - 19"
         },
         {
           "nombre": "semana 4",
           "monto": 117216.67,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Malianteo",
+          "fechaObs": "20 - 26"
         }
       ],
       "diseno": [
@@ -3260,9 +3266,15 @@ function renderReporteRango(){
   if(!fechas.length){el.innerHTML='<div class="empty">Sin fechas en ese rango — recordá que solo las fechas cargadas con el selector de calendario entran aquí</div>';return;}
  
   const totalRecaudado=fechas.reduce((s,f)=>s+f.recaudado,0);
-  const totalGastado=fechas.reduce((s,f)=>s+totalCostoMalianteo(f),0);
+  const totalGastadoFechas=fechas.reduce((s,f)=>s+totalCostoMalianteo(f),0);
+  // meses incluidos en el rango (para sumar los deptos mensuales que correspondan)
+  const mesesEnRango=[...new Set(fechas.map(f=>f.mes))];
+  const totalDeptosRango=mesesEnRango.reduce((s,mes)=>s+totalDeptosMesMalianteo(mes),0);
+  const totalPublicidadRango=mesesEnRango.reduce((s,mes)=>s+totalDeptoMalianteo(mes,'publicidad'),0);
+  const totalDisenoRango=mesesEnRango.reduce((s,mes)=>s+totalDeptoMalianteo(mes,'diseno'),0);
+  const totalGastado=totalGastadoFechas+totalDeptosRango;
   const balance=totalRecaudado-totalGastado;
-  const pendTotal=fechas.reduce((s,f)=>s+totalPendiente(f),0);
+  const pendTotal=fechas.filter(f=>!f.standBy).reduce((s,f)=>s+totalPendiente(f),0);
   const desdeFmt=desde.split('-').reverse().join('/');
   const hastaFmt=hasta.split('-').reverse().join('/');
  
@@ -3278,17 +3290,15 @@ function renderReporteRango(){
   const totalOperativos=fechas.reduce((s,f)=>(s+(f.operativos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
   const totalMerch=fechas.reduce((s,f)=>(s+(f.merch||[]).reduce((ss,p)=>ss+p.monto,0)),0);
  
-  // deudores del rango
+  // deudores del rango, separando lo activo de lo que está en stand-by
   const deudores={};
   fechas.forEach(f=>{
     pendientes(f).forEach(p=>{
-      if(!deudores[p.nombre])deudores[p.nombre]=0;
-      deudores[p.nombre]+=p.monto;
+      if(!deudores[p.nombre])deudores[p.nombre]={activo:0,standby:[]};
+      if(f.standBy) deudores[p.nombre].standby.push({fecha:f.fecha,monto:p.monto});
+      else deudores[p.nombre].activo+=p.monto;
     });
   });
- 
-  // meses incluidos en el rango
-  const mesesEnRango=[...new Set(fechas.map(f=>f.mes))];
  
   let html='';
  
@@ -3315,6 +3325,8 @@ function renderReporteRango(){
       <div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGAdic)} <span style="color:var(--text3);font-size:11px">${pct(totalGAdic,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalCom)} <span style="color:var(--text3);font-size:11px">${pct(totalCom,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Depto Publicidad</span><span class="report-v">${fmt(totalPublicidadRango)} <span style="color:var(--text3);font-size:11px">${pct(totalPublicidadRango,totalGastado)}</span></span></div>
+      <div class="report-kv"><span class="report-k">Depto Diseño (mensual)</span><span class="report-v">${fmt(totalDisenoRango)} <span style="color:var(--text3);font-size:11px">${pct(totalDisenoRango,totalGastado)}</span></span></div>
     </div>`;
  
   if(sec.pendientes) html+=`
@@ -3322,7 +3334,16 @@ function renderReporteRango(){
       <h3>Pagos pendientes</h3>
       ${Object.keys(deudores).length===0
         ? '<div class="empty" style="padding:12px">Sin pendientes en este rango ✓</div>'
-        : Object.keys(deudores).sort().map(k=>`<div class="report-kv"><span class="report-k">${k}</span><span class="report-v red">${fmt(deudores[k])}</span></div>`).join('')}
+        : Object.keys(deudores).sort().map(k=>{
+            const d=deudores[k];
+            return `<div class="report-kv" style="flex-direction:column;align-items:flex-start;gap:2px;padding:8px 0">
+              <div style="display:flex;justify-content:space-between;width:100%">
+                <span class="report-k">${k}</span>
+                <span class="report-v red">${fmt(d.activo)}</span>
+              </div>
+              ${d.standby.map(x=>`<div style="font-size:11px;color:var(--text3);padding-left:4px">⏸ ${fmt(x.monto)} — ${x.fecha} está en stand-by (no dejó recaudado, no urgente)</div>`).join('')}
+            </div>`;
+          }).join('')}
       ${Object.keys(deudores).length>0?`<div class="report-kv" style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px"><span class="report-k" style="font-weight:600">Total</span><span class="report-v red">${fmt(pendTotal)}</span></div>`:''}
     </div>`;
  
@@ -3333,31 +3354,66 @@ function renderReporteRango(){
         const mens=getMensualesByMes(mes);
         if(!mens.length)return '';
         return `<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">${mes}</div>
-          ${mens.map(m=>`<div class="report-kv"><span class="report-k">${m.nombre}${m.notas?' — '+m.notas:''}</span><span class="report-v ${m.estado==='NP'?'red':'green'}">${fmt(m.monto)} · ${m.estado}</span></div>`).join('')}
+          ${mens.map(m=>{
+            const asistencias=fechas.filter(f=>f.mes===mes && (f.asistencia||[]).includes(m.nombre)).length;
+            return `<div class="report-kv"><span class="report-k">${m.nombre}${m.notas?' — '+m.notas:''}${PERSONAL_FIJO.includes(m.nombre)?' <span style="color:var(--text3);font-size:11px">('+asistencias+' fecha'+(asistencias===1?'':'s')+')</span>':''}</span><span class="report-v ${m.estado==='NP'?'red':'green'}">${fmt(m.monto)} · ${m.estado}</span></div>`;
+          }).join('')}
         </div>`;
       }).join('')}
     </div>`;
  
-  if(sec.boliches && DB.boliches.length>0) html+=`
+  if(sec.boliches && DB.boliches.some(b=>mesesEnRango.includes(b.mes))) html+=`
     <div class="report-section">
       <h3>Deudas de boliches</h3>
-      ${DB.boliches.map(b=>`<div class="report-kv"><span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span><span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} · ${b.estado}</span></div>`).join('')}
+      ${DB.boliches.filter(b=>mesesEnRango.includes(b.mes)).map(b=>`<div class="report-kv"><span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span><span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} · ${b.estado}</span></div>`).join('')}
     </div>`;
  
-  if(sec.detalle) html+=`
+  if(sec.boliches){
+    const cristianPend=mesesEnRango.reduce((s,mes)=>s+totalDeudaCristianPendiente(mes),0);
+    if(cristianPend>0) html+=`
     <div class="report-section">
-      <h3>Detalle por fecha</h3>
-      ${fechas.map(f=>`
-        <div style="margin-bottom:16px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+      <h3>Deuda de Cristian (socio)</h3>
+      <div class="report-kv"><span class="report-k" style="font-weight:600">Pendiente en el rango</span><span class="report-v red">${fmt(cristianPend)}</span></div>
+    </div>`;
+  }
+ 
+  if(sec.detalle) html+=`
+    <div class="report-section page-break" style="margin-top:24px;padding-top:16px;border-top:2px dashed var(--border)">
+      <h3>Detalle por fecha — línea por línea</h3>
+      ${fechas.map(f=>{
+        const rows=[
+          ...(f.pr||[]).map(p=>({...p,cat:'PR'})),
+          ...(f.dj||[]).map(p=>({...p,cat:'DJs'})),
+          ...(f.ph||[]).map(p=>({...p,cat:'PH'})),
+          ...(f.gastos||[]).map(p=>({...p,cat:'Extras'})),
+          ...(f.pauta||[]).map(p=>({...p,cat:'Pauta'})),
+          ...(f.diseno||[]).map(p=>({...p,cat:'Diseño'})),
+          ...(f.contenido||[]).map(p=>({...p,cat:'Contenido'})),
+          ...(f.operativos||[]).map(p=>({...p,cat:'Operativos'})),
+          ...(f.merch||[]).map(p=>({...p,cat:'Merch'})),
+          ...(f.comisiones||[]).map(p=>({...p,cat:'Comisión'}))
+        ];
+        return `<div style="margin-bottom:16px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px">
             <strong style="font-family:var(--font-mono)">${f.fecha} — ${f.evento}</strong>
-            <span style="font-size:12px;color:var(--text2)">Total: ${fmt(totalCostoMalianteo(f))}${f.recaudado>0?' · Rec: '+fmt(f.recaudado):''}</span>
+            <span style="font-size:12px;color:var(--text2)">Total: ${fmt(totalCostoMalianteo(f))}${f.recaudado>0?' · Rec: '+fmt(f.recaudado):''}${f.standBy?' ⏸ stand-by':''}</span>
           </div>
-          ${allStaff(f).map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
-            <span>${p.nombre}</span>
+          ${rows.map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.nombre} <span style="color:var(--text3)">(${p.cat}${p.quienPaga&&p.quienPaga!=='Malianteo'?' · paga '+p.quienPaga:''})</span></span>
             <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
           </div>`).join('')}
-        </div>`).join('')}
+        </div>`}).join('')}
+      ${mesesEnRango.map(mes=>['publicidad','diseno'].map(tipo=>{
+        const items=getDeptos(mes)[tipo]||[];
+        if(!items.length)return '';
+        return `<div style="margin-bottom:14px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="margin-bottom:8px"><strong style="font-family:var(--font-mono)">Depto ${DEPTO_LABELS[tipo]} — ${mes}</strong></div>
+          ${items.map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.nombre}${p.fechaObs?' <span style="color:var(--text3)">('+p.fechaObs+')</span>':''}</span>
+            <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
+          </div>`).join('')}
+        </div>`;
+      }).join('')).join('')}
     </div>`;
  
   el.innerHTML=html||'<div class="empty">Seleccioná al menos una sección para mostrar</div>';
@@ -3437,19 +3493,22 @@ function renderDashboard(){
         <div class="person-monto red">${fmt(deudores[k].reduce((s,d)=>s+d.monto,0))}</div>
       </div>`).join('');
  
-  // fechas del mes
+  // fechas del mes — estado de cobro (recaudado) en vez de gasto
   document.getElementById('dash-fechas').innerHTML = fechas.length===0
     ? '<div class="empty">Sin fechas cargadas</div>'
     : fechas.map(f=>{
-        const np=pendientes(f).length;
-        const dotCls=np===0?'fecha-dot-ok':np<3?'fecha-dot-pend':'fecha-dot-bad';
+        const total=f.totalBoliche||f.recaudado||0;
+        const resto=restoPendienteBoliche(f);
+        const cobrado=total-resto;
+        const estadoTxt = total===0?'Sin recaudado cargado':resto<=0?'✓ Cobrado completo':cobrado>0?'Parcialmente cobrado':'Sin cobrar todavía';
+        const dotCls = total===0?'fecha-dot-pend':resto<=0?'fecha-dot-ok':cobrado>0?'fecha-dot-pend':'fecha-dot-bad';
         return `<div class="person-row">
           <div style="display:flex;align-items:center;gap:8px">
             <span class="fecha-dot ${dotCls}"></span>
-            <div><div class="person-name">${f.fecha} — ${f.evento}</div>
-            <div class="person-sub">${(f.pr||[]).length} PR · ${(f.dj||[]).length} DJs${np>0?' · '+np+' pend.':''}</div></div>
+            <div><div class="person-name">${f.fecha} — ${f.evento}${f.standBy?' ⏸':''}</div>
+            <div class="person-sub">${estadoTxt}${total>0?' · Recaudado '+fmt(total):''}</div></div>
           </div>
-          <div class="person-monto">${fmt(totalCostoMalianteo(f))}</div>
+          <div class="person-monto ${resto>0?'red':'green'}">${resto>0?'Falta '+fmt(resto):total>0?'✓ '+fmt(total):'—'}</div>
         </div>`;
       }).join('');
  
@@ -3897,6 +3956,14 @@ function renderMensualPagina(){
   renderDeptoRows('diseno');
 }
  
+// Total pendiente que Cristian debe a Malianteo (auto por fechas + manual), opcionalmente filtrado por mes
+function totalDeudaCristianPendiente(mes){
+  const autoTotal=DB.fechas.filter(f=>f.compartCristian && (!mes||f.mes===mes) && (f.estadoCristian||'NP')!=='P')
+    .reduce((s,f)=>s+(f.recaudado||0),0);
+  const manualTotal=(DB.cristianExtra||[]).filter(c=>(!mes||c.mes===mes) && (c.estado||'NP')!=='P')
+    .reduce((s,c)=>s+(c.monto||0),0);
+  return autoTotal+manualTotal;
+}
 // Fechas marcadas "comparte con Cristian": se muestra lo recaudado de esa fecha como lo que Cristian debe a Malianteo
 function renderDeudaCristian(){
   const el=document.getElementById('cristian-deudas-list');
@@ -4498,7 +4565,8 @@ function renderReporte(){
   const totalGastado=totalGastadoFechas+totalMens+totalDeptos;
   const balance=totalRecaudado-totalGastado;
   const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
-  const totalBoliches=DB.boliches.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
+  const bolichesDelMes=DB.boliches.filter(b=>b.mes===mes);
+  const totalBoliches=bolichesDelMes.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
   const pendBolichePagos=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
  
   // gastos por categoria
@@ -4572,6 +4640,20 @@ function renderReporte(){
     </div>
  
     <div class="report-section">
+      <h3>Sueldos mensuales — detalle por persona</h3>
+      ${getMensualesByMes(mes).length===0
+        ? '<div class="empty" style="padding:12px">Sin sueldos cargados este mes</div>'
+        : getMensualesByMes(mes).map(m=>{
+            const asistencias=fechas.filter(f=>(f.asistencia||[]).includes(m.nombre)).length;
+            return `<div class="report-kv">
+              <span class="report-k">${m.nombre}${m.notas?' — '+m.notas:''}${PERSONAL_FIJO.includes(m.nombre)?' <span style="color:var(--text3);font-size:11px">('+asistencias+' fecha'+(asistencias===1?'':'s')+' este mes)</span>':''}</span>
+              <span class="report-v ${m.estado==='NP'?'red':'green'}">${fmt(m.monto)} · ${m.estado}</span>
+            </div>`;
+          }).join('')
+      }
+    </div>
+ 
+    <div class="report-section">
       <h3>Estado de cobro por fecha</h3>
       ${fechas.filter(f=>(f.totalBoliche||f.recaudado)>0).length===0
         ? '<div class="empty" style="padding:12px">Sin recaudación cargada en este mes</div>'
@@ -4598,9 +4680,10 @@ function renderReporte(){
  
     <div class="report-section">
       <h3>Total deudas boliches</h3>
-      ${DB.boliches.length===0
-        ? '<div class="empty" style="padding:12px">Sin deudas manuales cargadas</div>'
-        : DB.boliches.map(b=>`<div class="report-kv">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Solo deudas registradas con mes = ${mes}. Otras deudas de otros meses no se listan acá (mirá la pestaña "Deudas de boliches" para el panorama completo).</div>
+      ${bolichesDelMes.length===0
+        ? '<div class="empty" style="padding:12px">Sin deudas de este mes cargadas</div>'
+        : bolichesDelMes.map(b=>`<div class="report-kv">
             <span class="report-k">${b.nombre} <span style="color:var(--text3)">${b.fecha}</span></span>
             <span class="report-v ${b.estado==='P'?'green':'red'}">${fmt(b.monto)} — ${b.estado}</span>
           </div>`).join('')
@@ -4609,6 +4692,51 @@ function renderReporte(){
         <span class="report-k" style="font-weight:600">Total deuda boliches</span>
         <span class="report-v red">${fmt(totalBoliches)}</span>
       </div>
+      <div class="report-kv">
+        <span class="report-k" style="font-weight:600">Deuda de Cristian (socio) — pendiente este mes</span>
+        <span class="report-v red">${fmt(totalDeudaCristianPendiente(mes))}</span>
+      </div>
+    </div>
+ 
+    <div class="report-section page-break" style="margin-top:24px;padding-top:16px;border-top:2px dashed var(--border)">
+      <h3>Detalle de gastos — línea por línea</h3>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Todos los ítems del mes (PR, DJs, PH, Extras, Pauta, Diseño, Contenido, Operativos, Merch, Comisiones y Deptos mensuales), para revisión o backup.</div>
+      ${fechas.map(f=>{
+        const rows=[
+          ...(f.pr||[]).map(p=>({...p,cat:'PR'})),
+          ...(f.dj||[]).map(p=>({...p,cat:'DJs'})),
+          ...(f.ph||[]).map(p=>({...p,cat:'PH'})),
+          ...(f.gastos||[]).map(p=>({...p,cat:'Extras'})),
+          ...(f.pauta||[]).map(p=>({...p,cat:'Pauta'})),
+          ...(f.diseno||[]).map(p=>({...p,cat:'Diseño'})),
+          ...(f.contenido||[]).map(p=>({...p,cat:'Contenido'})),
+          ...(f.operativos||[]).map(p=>({...p,cat:'Operativos'})),
+          ...(f.merch||[]).map(p=>({...p,cat:'Merch'})),
+          ...(f.comisiones||[]).map(p=>({...p,cat:'Comisión'}))
+        ];
+        if(!rows.length)return '';
+        return `<div style="margin-bottom:14px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <strong style="font-family:var(--font-mono)">${f.fecha} — ${f.evento}</strong>
+            <span style="font-size:12px;color:var(--text2)">Total: ${fmt(totalCostoMalianteo(f))}${f.standBy?' ⏸ stand-by':''}</span>
+          </div>
+          ${rows.map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.nombre} <span style="color:var(--text3)">(${p.cat}${p.quienPaga&&p.quienPaga!=='Malianteo'?' · paga '+p.quienPaga:''})</span></span>
+            <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
+          </div>`).join('')}
+        </div>`;
+      }).join('')}
+      ${['publicidad','diseno'].map(tipo=>{
+        const items=getDeptos(mes)[tipo]||[];
+        if(!items.length)return '';
+        return `<div style="margin-bottom:14px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
+          <div style="margin-bottom:8px"><strong style="font-family:var(--font-mono)">Depto ${DEPTO_LABELS[tipo]} — ${mes}</strong></div>
+          ${items.map(p=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.nombre}${p.fechaObs?' <span style="color:var(--text3)">('+p.fechaObs+')</span>':''}</span>
+            <span style="font-family:var(--font-mono);color:${p.estado==='NP'?'var(--danger)':'var(--text2)'}">${fmt(p.monto)} · ${p.estado}</span>
+          </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>
   `;
 }
