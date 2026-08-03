@@ -2224,7 +2224,7 @@ const DEFAULT_DB = {
         {
           "nombre": "Mati PH",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         }
       ],
@@ -2284,6 +2284,11 @@ const DEFAULT_DB = {
           "nota": "Transfe ALE",
           "monto": 1728332.39,
           "fechaPago": "2026-07-18"
+        },
+        {
+          "nota": "Transfe PATO",
+          "monto": 9983.47,
+          "fechaPago": "2026-08-03"
         }
       ],
       "pr": [
@@ -2355,7 +2360,7 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "evento": "Cruza",
       "recaudado": 2890016.53,
-      "estadoRecaudado": "ADEUDA",
+      "estadoRecaudado": "PAGADO",
       "pptoDJ": 800000,
       "pptoPH": 400000,
       "notas": "",
@@ -2368,7 +2373,13 @@ const DEFAULT_DB = {
         "Fiama"
       ],
       "totalBoliche": 2890016.53,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Transferencia Pato ",
+          "monto": 2890016.53,
+          "fechaPago": "2026-08-03"
+        }
+      ],
       "pr": [
         {
           "nombre": "Lara",
@@ -2639,7 +2650,7 @@ const DEFAULT_DB = {
         {
           "nombre": "Consola",
           "monto": 140000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         },
         {
@@ -2678,19 +2689,19 @@ const DEFAULT_DB = {
         {
           "nombre": "Mcrone",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         },
         {
           "nombre": "Bixxha",
           "monto": 200000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         },
         {
           "nombre": "Vixxen",
           "monto": 200000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         }
       ],
@@ -2767,7 +2778,7 @@ const DEFAULT_DB = {
         {
           "nombre": "CC Mati (cruza+chn)",
           "monto": 200000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Malianteo"
         }
       ],
@@ -2783,7 +2794,7 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "monto": 2000000,
       "fecha": "",
-      "estado": "NP",
+      "estado": "P",
       "notas": ""
     }
   ],
@@ -2844,19 +2855,19 @@ const DEFAULT_DB = {
       {
         "nombre": "Zoel CM",
         "monto": 450000,
-        "estado": "NP",
+        "estado": "P",
         "notas": ""
       },
       {
         "nombre": "Anto Fantini",
         "monto": 750000,
-        "estado": "NP",
+        "estado": "P",
         "notas": ""
       },
       {
         "nombre": "Juan",
         "monto": 900000,
-        "estado": "NP",
+        "estado": "P",
         "notas": ""
       },
       {
@@ -2867,9 +2878,9 @@ const DEFAULT_DB = {
       },
       {
         "nombre": "Molfe",
-        "monto": 500000,
-        "estado": "NP",
-        "notas": "500000"
+        "monto": 1000000,
+        "estado": "P",
+        "notas": ""
       },
       {
         "nombre": "Maga",
@@ -2886,7 +2897,7 @@ const DEFAULT_DB = {
       {
         "nombre": "Fiama",
         "monto": 400000,
-        "estado": "NP",
+        "estado": "P",
         "notas": "Tomi adelanto $100.000"
       },
       {
@@ -2978,7 +2989,7 @@ const DEFAULT_DB = {
       "mes": "MARZO",
       "monto": 1550000,
       "estado": "NP",
-      "notas": ""
+      "notas": "Pago $1.200.000 (3/8), faltan $350.000"
     },
     {
       "id": 1784672993636,
@@ -2986,7 +2997,7 @@ const DEFAULT_DB = {
       "fecha": "14/06",
       "mes": "JUNIO",
       "monto": 1000000,
-      "estado": "NP",
+      "estado": "P",
       "notas": ""
     }
   ]
@@ -3077,6 +3088,7 @@ function normalizeDB(db){
   if(!db.mensuales)db.mensuales={};
   if(!db.deptos)db.deptos={};
   if(!db.cristianExtra)db.cristianExtra=[];
+  db.cristianExtra.forEach(c=>{ if(!Array.isArray(c.pagos)) c.pagos=[]; });
   // Migración: Pauta se unificó con Publicidad — si quedaba algo cargado en "pauta", se suma a "publicidad" y se borra.
   Object.keys(db.deptos).forEach(mes=>{
     const d=db.deptos[mes];
@@ -3185,6 +3197,14 @@ function totalCostoMalianteo(f){
     .reduce((s,p)=>s+p.monto,0)
     + (f.comisiones||[]).reduce((s,p)=>s+p.monto,0);
 }
+// Suma de una categoría (pr, dj, ph, etc.) para un set de fechas, aplicando el MISMO filtro
+// que usa el balance: solo lo que paga Malianteo, y sin lo pendiente de fechas en stand-by.
+function sumaCategoriaMalianteo(fechas, cat){
+  return fechas.reduce((s,f)=>s+(f[cat]||[])
+    .filter(p=>(p.quienPaga||'Malianteo')==='Malianteo')
+    .filter(p=>!(f.standBy && p.estado==='NP'))
+    .reduce((ss,p)=>ss+p.monto,0),0);
+}
 function balanceMalianteo(f){
   if(esCHNJueves(f)) return f.recaudado;
   return f.recaudado - totalCostoMalianteo(f);
@@ -3279,16 +3299,16 @@ function renderReporteRango(){
   const hastaFmt=hasta.split('-').reverse().join('/');
  
   // gastos por categoría
-  const totalPR=fechas.reduce((s,f)=>(s+(f.pr||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalDJ=fechas.reduce((s,f)=>(s+(f.dj||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalPH=fechas.reduce((s,f)=>(s+(f.ph||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalGAdic=fechas.reduce((s,f)=>(s+(f.gastos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPR=sumaCategoriaMalianteo(fechas,'pr');
+  const totalDJ=sumaCategoriaMalianteo(fechas,'dj');
+  const totalPH=sumaCategoriaMalianteo(fechas,'ph');
+  const totalGAdic=sumaCategoriaMalianteo(fechas,'gastos');
   const totalCom=fechas.reduce((s,f)=>(s+(f.comisiones||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalPauta=fechas.reduce((s,f)=>(s+(f.pauta||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalDiseno=fechas.reduce((s,f)=>(s+(f.diseno||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalContenido=fechas.reduce((s,f)=>(s+(f.contenido||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalOperativos=fechas.reduce((s,f)=>(s+(f.operativos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalMerch=fechas.reduce((s,f)=>(s+(f.merch||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPauta=sumaCategoriaMalianteo(fechas,'pauta');
+  const totalDiseno=sumaCategoriaMalianteo(fechas,'diseno');
+  const totalContenido=sumaCategoriaMalianteo(fechas,'contenido');
+  const totalOperativos=sumaCategoriaMalianteo(fechas,'operativos');
+  const totalMerch=sumaCategoriaMalianteo(fechas,'merch');
  
   // deudores del rango, separando lo activo de lo que está en stand-by
   const deudores={};
@@ -3321,8 +3341,8 @@ function renderReporteRango(){
       ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>`:''}
       ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>`:''}
       <div class="report-kv"><span class="report-k">Creación de contenido</span><span class="report-v">${fmt(totalContenido)} <span style="color:var(--text3);font-size:11px">${pct(totalContenido,totalGastado)}</span></span></div>
-      <div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>
-      <div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>
+      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>`:''}
+      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>`:''}
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGAdic)} <span style="color:var(--text3);font-size:11px">${pct(totalGAdic,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalCom)} <span style="color:var(--text3);font-size:11px">${pct(totalCom,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Depto Publicidad</span><span class="report-v">${fmt(totalPublicidadRango)} <span style="color:var(--text3);font-size:11px">${pct(totalPublicidadRango,totalGastado)}</span></span></div>
@@ -3371,6 +3391,8 @@ function renderReporteRango(){
   if(sec.boliches){
     const cristianItems=mesesEnRango.flatMap(mes=>itemsDeudaCristian(mes));
     const cristianPend=mesesEnRango.reduce((s,mes)=>s+totalDeudaCristianPendiente(mes),0);
+    const cristianHist=[...new Map(mesesEnRango.flatMap(mes=>itemsDeudaCristianHistorica(mes)).map(c=>[c.concepto+c.fecha+c.mes,c])).values()]
+      .filter(c=>!mesesEnRango.includes(c.mes));
     if(cristianItems.length>0) html+=`
     <div class="report-section">
       <h3>Deuda de Cristian (socio)</h3>
@@ -3382,6 +3404,13 @@ function renderReporteRango(){
         <span class="report-k" style="font-weight:600">Pendiente en el rango</span>
         <span class="report-v red">${fmt(cristianPend)}</span>
       </div>
+      ${cristianHist.length>0?`<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Deuda histórica sin cobrar (de otros meses)</div>
+        ${cristianHist.map(c=>`<div class="report-kv">
+            <span class="report-k">${c.concepto} <span style="color:var(--text3)">${c.fecha||''} · ${c.mes}</span></span>
+            <span class="report-v red">${fmt(c.monto)}</span>
+          </div>`).join('')}
+      </div>`:''}
     </div>`;
   }
  
@@ -3968,8 +3997,8 @@ function renderMensualPagina(){
 function totalDeudaCristianPendiente(mes){
   const autoTotal=DB.fechas.filter(f=>f.compartCristian && (!mes||f.mes===mes) && (f.estadoCristian||'NP')!=='P')
     .reduce((s,f)=>s+(f.recaudado||0),0);
-  const manualTotal=(DB.cristianExtra||[]).filter(c=>(!mes||c.mes===mes) && (c.estado||'NP')!=='P')
-    .reduce((s,c)=>s+(c.monto||0),0);
+  const manualTotal=(DB.cristianExtra||[]).filter(c=>!mes||c.mes===mes)
+    .reduce((s,c)=>s+restoCristian(c),0);
   return autoTotal+manualTotal;
 }
 // Items detallados de deuda de Cristian (auto + manual) para un mes dado
@@ -3977,27 +4006,48 @@ function itemsDeudaCristian(mes){
   const autoItems=DB.fechas.filter(f=>f.compartCristian && (!mes||f.mes===mes)).map(f=>({
     concepto:f.evento, fecha:f.fecha, monto:f.recaudado||0, estado:f.estadoCristian||'NP'
   }));
-  const manualItems=(DB.cristianExtra||[]).filter(c=>!mes||c.mes===mes).map(c=>({
-    concepto:c.concepto, fecha:c.fecha, monto:c.monto||0, estado:c.estado||'NP'
+  const manualItems=(DB.cristianExtra||[]).filter(c=>!mes||c.mes===mes).map(c=>{
+    const resto=restoCristian(c);
+    const cobrado=cobradoCristian(c);
+    return {
+      concepto:c.concepto+(cobrado>0?` (cobrado ${fmt(cobrado)} de ${fmt(c.monto||0)})`:''),
+      fecha:c.fecha, monto:resto, estado:resto<=0?'P':'NP'
+    };
+  });
+  return [...autoItems,...manualItems];
+}
+// Deuda de Cristian pendiente que quedó de OTROS meses (para no perderla de vista en el reporte del mes actual)
+function itemsDeudaCristianHistorica(mes){
+  const autoItems=DB.fechas.filter(f=>f.compartCristian && f.mes!==mes && (f.estadoCristian||'NP')!=='P').map(f=>({
+    concepto:f.evento, fecha:f.fecha, mes:f.mes, monto:f.recaudado||0
+  }));
+  const manualItems=(DB.cristianExtra||[]).filter(c=>c.mes!==mes && restoCristian(c)>0).map(c=>({
+    concepto:c.concepto, fecha:c.fecha, mes:c.mes, monto:restoCristian(c)
   }));
   return [...autoItems,...manualItems];
 }
-// Fechas marcadas "comparte con Cristian": se muestra lo recaudado de esa fecha como lo que Cristian debe a Malianteo
+let cristianPagosAbierto=null; // id del ítem manual con el panel de pagos desplegado
+function cobradoCristian(c){ return (c.pagos||[]).reduce((s,p)=>s+(p.monto||0),0); }
+function restoCristian(c){
+  if(c.estado==='P' && !(c.pagos&&c.pagos.length)) return 0; // ítems viejos marcados pagados sin detalle de pagos
+  return Math.max(0,(c.monto||0)-cobradoCristian(c));
+}
 function renderDeudaCristian(){
   const el=document.getElementById('cristian-deudas-list');
   if(!el)return;
+  const mesActual=document.getElementById('cr-filtro-mes')?.value||'';
   const autoItems=DB.fechas.filter(f=>f.compartCristian).map(f=>({
     tipo:'auto', id:f.id, concepto:f.evento, fecha:f.fecha, mes:f.mes,
-    monto:f.recaudado||0, estado:f.estadoCristian||'NP'
+    monto:f.recaudado||0, estado:f.estadoCristian||'NP', pagos:[]
   }));
   const manualItems=(DB.cristianExtra||[]).map(c=>({
     tipo:'manual', id:c.id, concepto:c.concepto, fecha:c.fecha, mes:c.mes,
-    monto:c.monto||0, estado:c.estado||'NP', notas:c.notas
+    monto:c.monto||0, estado:c.estado||'NP', notas:c.notas, pagos:c.pagos||[]
   }));
   const todos=[...autoItems,...manualItems];
-  const pendientes=todos.filter(x=>x.estado!=='P');
-  const saldadas=todos.filter(x=>x.estado==='P');
-  const total=pendientes.reduce((s,x)=>s+x.monto,0);
+  const pendientes=todos.filter(x=>x.tipo==='manual'?restoCristian(x)>0:x.estado!=='P');
+  const saldadas=todos.filter(x=>x.tipo==='manual'?restoCristian(x)<=0:x.estado==='P');
+  const total=pendientes.reduce((s,x)=>s+(x.tipo==='manual'?restoCristian(x):x.monto),0);
  
   if(!todos.length){
     el.innerHTML='<div class="empty">Sin deudas de Cristian cargadas</div>';
@@ -4012,17 +4062,42 @@ function renderDeudaCristian(){
         <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleDeudaCristian('${x.tipo}',${x.id})">${x.estado==='P'?'Reabrir':'Marcar pagada'}</button>
       </div>
     </div>`;
-  const filaManual=x=>`<div class="person-row">
-      <div><div class="person-name">${x.fecha?x.fecha+' — ':''}${x.concepto} <span style="color:var(--text3);font-size:11px">${x.mes||''}</span></div>
-      ${x.notas?`<div class="person-sub">${x.notas}</div>`:''}
+  const filaManual=x=>{
+    const cobrado=cobradoCristian(x);
+    const resto=restoCristian(x);
+    const abierto=cristianPagosAbierto===x.id;
+    const badge = resto<=0?'✓ Saldada':cobrado>0?'Parcial':'Pendiente';
+    const badgeColor = resto<=0?'green':cobrado>0?'accent2':'red';
+    return `<div class="person-row" style="flex-direction:column;align-items:stretch;gap:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="person-name">${x.fecha?x.fecha+' — ':''}${x.concepto} <span style="color:var(--text3);font-size:11px">${x.mes||''}</span></div>
+        ${x.notas?`<div class="person-sub">${x.notas}</div>`:''}
+        <div class="person-sub">Total ${fmt(x.monto)}${cobrado>0?' · Cobrado '+fmt(cobrado):''}${resto>0?' · Resta '+fmt(resto):''}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <span class="badge badge-${badgeColor==='green'?'p':badgeColor==='accent2'?'pc':'np'}">${badge}</span>
+          <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="cristianPagosAbierto=cristianPagosAbierto===${x.id}?null:${x.id};renderDeudaCristian()">${abierto?'▲':'▼'} Pagos</button>
+          <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="editarDeudaCristian(${x.id})">✎</button>
+          <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px;color:var(--danger)" onclick="eliminarDeudaCristian(${x.id})">✕</button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <span class="person-monto ${x.estado==='P'?'green':'red'}">${fmt(x.monto)}</span>
-        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="toggleDeudaCristian('${x.tipo}',${x.id})">${x.estado==='P'?'Reabrir':'Marcar pagada'}</button>
-        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px" onclick="editarDeudaCristian(${x.id})">✎ Editar</button>
-        <button class="btn-ghost btn-sm btn" style="padding:3px 6px;font-size:11px;color:var(--danger)" onclick="eliminarDeudaCristian(${x.id})">✕</button>
-      </div>
+      ${abierto?`<div style="padding:10px;background:var(--bg3);border-radius:var(--radius)">
+        ${x.pagos.length?x.pagos.map((p,i)=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">
+            <span>${p.fecha||'Sin fecha'}${p.nota?' — '+p.nota:''}</span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span style="font-family:var(--font-mono);color:var(--success)">${fmt(p.monto)}</span>
+              <button class="btn-ghost btn-sm btn" style="padding:2px 5px;font-size:10px;color:var(--danger)" onclick="eliminarPagoCristian(${x.id},${i})">✕</button>
+            </span>
+          </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0">Sin pagos registrados todavía</div>'}
+        <div class="form-row cols3" style="margin-top:8px">
+          <div class="form-group"><label>Fecha del pago</label><input type="text" id="cp-fecha-${x.id}" placeholder="Ej: 03/08"></div>
+          <div class="form-group"><label>Monto</label><input type="number" id="cp-monto-${x.id}" placeholder="0"></div>
+          <div class="form-group"><label>Nota</label><input type="text" id="cp-nota-${x.id}" placeholder="Opcional..."></div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="agregarPagoCristian(${x.id})">+ Registrar pago</button>
+      </div>`:''}
     </div>`;
+  };
   const fila=x=>x.tipo==='manual'?filaManual(x):filaAuto(x);
   el.innerHTML = (pendientes.length?pendientes.map(fila).join(''):'<div class="empty">Sin pendientes ✓</div>')
     + `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
@@ -4033,6 +4108,29 @@ function renderDeudaCristian(){
         <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Ya saldadas</div>
         ${saldadas.map(fila).join('')}
       </div>`:'');
+}
+function agregarPagoCristian(id){
+  const c=(DB.cristianExtra||[]).find(x=>x.id===id);
+  if(!c)return;
+  const monto=parseFloat(document.getElementById('cp-monto-'+id).value)||0;
+  if(monto<=0){alert('Ingresá un monto válido');return;}
+  const fecha=document.getElementById('cp-fecha-'+id).value;
+  const nota=document.getElementById('cp-nota-'+id).value;
+  if(!c.pagos)c.pagos=[];
+  c.pagos.push({fecha,monto,nota});
+  // si con este pago se cubre el total, lo marcamos saldada automáticamente
+  if(cobradoCristian(c)>=c.monto) c.estado='P';
+  saveDB();
+  renderDeudaCristian();
+  toast('Pago registrado ✓');
+}
+function eliminarPagoCristian(id,idx){
+  const c=(DB.cristianExtra||[]).find(x=>x.id===id);
+  if(!c||!c.pagos)return;
+  c.pagos.splice(idx,1);
+  if(cobradoCristian(c)<c.monto) c.estado='NP';
+  saveDB();
+  renderDeudaCristian();
 }
 function toggleDeudaCristian(tipo,id){
   if(tipo==='auto'){
@@ -4090,7 +4188,7 @@ function guardarDeudaCristian(){
     const c=DB.cristianExtra.find(x=>x.id===parseInt(editId));
     if(c)Object.assign(c,datos);
   } else {
-    DB.cristianExtra.push({id:Date.now(),...datos});
+    DB.cristianExtra.push({id:Date.now(),pagos:[],...datos});
   }
   saveDB();
   document.getElementById('cristian-form').style.display='none';
@@ -4588,16 +4686,16 @@ function renderReporte(){
   const pendBolichePagos=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
  
   // gastos por categoria
-  const totalPR=fechas.reduce((s,f)=>(s+(f.pr||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalDJ=fechas.reduce((s,f)=>(s+(f.dj||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalPH=fechas.reduce((s,f)=>(s+(f.ph||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalGastosAd=fechas.reduce((s,f)=>(s+(f.gastos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPR=sumaCategoriaMalianteo(fechas,'pr');
+  const totalDJ=sumaCategoriaMalianteo(fechas,'dj');
+  const totalPH=sumaCategoriaMalianteo(fechas,'ph');
+  const totalGastosAd=sumaCategoriaMalianteo(fechas,'gastos');
   const totalComisiones=fechas.reduce((s,f)=>(s+(f.comisiones||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalPauta=fechas.reduce((s,f)=>(s+(f.pauta||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalDiseno=fechas.reduce((s,f)=>(s+(f.diseno||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalContenido=fechas.reduce((s,f)=>(s+(f.contenido||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalOperativos=fechas.reduce((s,f)=>(s+(f.operativos||[]).reduce((ss,p)=>ss+p.monto,0)),0);
-  const totalMerch=fechas.reduce((s,f)=>(s+(f.merch||[]).reduce((ss,p)=>ss+p.monto,0)),0);
+  const totalPauta=sumaCategoriaMalianteo(fechas,'pauta');
+  const totalDiseno=sumaCategoriaMalianteo(fechas,'diseno');
+  const totalContenido=sumaCategoriaMalianteo(fechas,'contenido');
+  const totalOperativos=sumaCategoriaMalianteo(fechas,'operativos');
+  const totalMerch=sumaCategoriaMalianteo(fechas,'merch');
  
   // pendientes por persona, separando lo activo de lo que está en stand-by
   const deudoresRep={};
@@ -4648,8 +4746,8 @@ function renderReporte(){
       ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>`:''}
       ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>`:''}
       <div class="report-kv"><span class="report-k">Creación de contenido</span><span class="report-v">${fmt(totalContenido)} <span style="color:var(--text3);font-size:11px">${pct(totalContenido,totalGastado)}</span></span></div>
-      <div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>
-      <div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>
+      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>`:''}
+      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>`:''}
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGastosAd)} <span style="color:var(--text3);font-size:11px">${pct(totalGastosAd,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalComisiones)} <span style="color:var(--text3);font-size:11px">${pct(totalComisiones,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Sueldos mensuales fijos</span><span class="report-v">${fmt(totalMens)} <span style="color:var(--text3);font-size:11px">${pct(totalMens,totalGastado)}</span></span></div>
@@ -4725,6 +4823,13 @@ function renderReporte(){
         <span class="report-k" style="font-weight:600">Total pendiente Cristian este mes</span>
         <span class="report-v red">${fmt(totalDeudaCristianPendiente(mes))}</span>
       </div>
+      ${itemsDeudaCristianHistorica(mes).length>0?`<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Deuda histórica sin cobrar (de otros meses)</div>
+        ${itemsDeudaCristianHistorica(mes).map(c=>`<div class="report-kv">
+            <span class="report-k">${c.concepto} <span style="color:var(--text3)">${c.fecha||''} · ${c.mes}</span></span>
+            <span class="report-v red">${fmt(c.monto)}</span>
+          </div>`).join('')}
+      </div>`:''}
     </div>
  
     <div class="report-section page-break" style="margin-top:24px;padding-top:16px;border-top:2px dashed var(--border)">
