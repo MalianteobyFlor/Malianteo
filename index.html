@@ -193,6 +193,7 @@ body{min-height:100vh;display:flex;flex-direction:column}
   .card-title,.section-title,.metric-label,.tbl th,.report-k{color:#666!important}
   .tbl td,.person-row{border-color:#eee!important}
   .page-break{page-break-before:always;break-before:page}
+  .cover-page{page-break-after:always;break-after:page}
 }
  
 /* RESPONSIVE */
@@ -2266,7 +2267,7 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "evento": "Cruza",
       "recaudado": 1772992.72,
-      "estadoRecaudado": "PARCIAL",
+      "estadoRecaudado": "PAGADO",
       "pptoDJ": 800000,
       "pptoPH": 400000,
       "notas": "POLO",
@@ -2289,6 +2290,11 @@ const DEFAULT_DB = {
           "nota": "Transfe PATO",
           "monto": 9983.47,
           "fechaPago": "2026-08-03"
+        },
+        {
+          "nota": "Efectivo PATO",
+          "monto": 34676.86,
+          "fechaPago": "2026-08-04"
         }
       ],
       "pr": [
@@ -2335,7 +2341,7 @@ const DEFAULT_DB = {
         {
           "nombre": "Mati PH",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         }
       ],
@@ -2424,7 +2430,7 @@ const DEFAULT_DB = {
         {
           "nombre": "Mati PH",
           "monto": 400000,
-          "estado": "NP",
+          "estado": "P",
           "quienPaga": "Cruza"
         }
       ],
@@ -2681,10 +2687,39 @@ const DEFAULT_DB = {
       "compartCristian": false,
       "standBy": false,
       "estadoCristian": "NP",
-      "asistencia": [],
+      "asistencia": [
+        "Maga",
+        "Molfe",
+        "Fiama"
+      ],
       "totalBoliche": 5201016.53,
       "pagosBoliche": [],
-      "pr": [],
+      "pr": [
+        {
+          "nombre": "Lara",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 100000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fix",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
       "dj": [
         {
           "nombre": "Mcrone",
@@ -2707,7 +2742,18 @@ const DEFAULT_DB = {
       ],
       "ph": [],
       "gastos": [],
-      "comisiones": [],
+      "comisiones": [
+        {
+          "nombre": "Nico W",
+          "monto": 21500,
+          "estado": "P"
+        },
+        {
+          "nombre": "Fix",
+          "monto": 7500,
+          "estado": "P"
+        }
+      ],
       "pauta": [],
       "diseno": [],
       "contenido": [],
@@ -2960,16 +3006,28 @@ const DEFAULT_DB = {
           "estado": "NP",
           "quienPaga": "Malianteo",
           "fechaObs": "20 - 26"
+        },
+        {
+          "nombre": "semana 5",
+          "monto": 428357.84,
+          "estado": "NP",
+          "quienPaga": "Malianteo",
+          "fechaObs": "27 - 02"
         }
       ],
       "diseno": [
         {
-          "nombre": "Juan",
-          "monto": 100000,
+          "nombre": "Santi diseñador",
+          "monto": 76000,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Malianteo",
+          "fechaObs": "5 (cinco) fechas, 34 placas. Detalle chat flor y juan"
         }
       ]
+    },
+    "JUNIO": {
+      "publicidad": [],
+      "diseno": []
     }
   },
   "cristianExtra": [
@@ -2980,7 +3038,8 @@ const DEFAULT_DB = {
       "mes": "MARZO",
       "monto": 1600000,
       "estado": "NP",
-      "notas": ""
+      "notas": "",
+      "pagos": []
     },
     {
       "id": 1784672919862,
@@ -2989,7 +3048,14 @@ const DEFAULT_DB = {
       "mes": "MARZO",
       "monto": 1550000,
       "estado": "NP",
-      "notas": "Pago $1.200.000 (3/8), faltan $350.000"
+      "notas": "Pago $1.200.000 (3/8), faltan $350.000",
+      "pagos": [
+        {
+          "fecha": "3/8",
+          "monto": 1200000,
+          "nota": ""
+        }
+      ]
     },
     {
       "id": 1784672993636,
@@ -2998,7 +3064,8 @@ const DEFAULT_DB = {
       "mes": "JUNIO",
       "monto": 1000000,
       "estado": "P",
-      "notas": ""
+      "notas": "",
+      "pagos": []
     }
   ]
 };
@@ -3172,6 +3239,68 @@ function pct(a,b){
   if(!b)return '—';
   return Math.round((a/b)*100)+'%';
 }
+// Gráfico de barras horizontal reutilizable, para reportes (usa las mismas clases .bar-chart del dashboard).
+// items: [{label, value, color?}]. Se ignoran automáticamente los ítems con value<=0.
+function renderMiniBarChart(items){
+  const activos=items.filter(i=>i.value>0);
+  if(!activos.length) return '';
+  const max=Math.max(...activos.map(i=>i.value),1);
+  return `<div class="bar-chart" style="margin:10px 0 4px">${activos.map(i=>`
+    <div class="bar-row">
+      <div class="bar-label">${i.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((i.value/max)*100)}%;background:${i.color||'var(--accent2)'}"></div></div>
+      <div class="bar-val">${fmt(i.value)}</div>
+    </div>`).join('')}</div>`;
+}
+// Paleta de colores para el gráfico de torta — variaciones sobre bordó/dorado/gris del branding.
+const PIE_COLORS=['#7a1220','#a9812e','#5b6470','#2f7a3d','#c81e2e','#8a6d3b','#4a3fa0','#227a43','#a05f1a','#2a5fa0','#8a7a1a','#276b2c','#b3212f'];
+function polarToCartesian(cx,cy,r,angleDeg){
+  const rad=(angleDeg-90)*Math.PI/180;
+  return {x:cx+r*Math.cos(rad), y:cy+r*Math.sin(rad)};
+}
+function describeArc(cx,cy,r,startAngle,endAngle){
+  const start=polarToCartesian(cx,cy,r,endAngle);
+  const end=polarToCartesian(cx,cy,r,startAngle);
+  const largeArcFlag=endAngle-startAngle<=180?"0":"1";
+  return ["M",cx,cy,"L",start.x,start.y,"A",r,r,0,largeArcFlag,0,end.x,end.y,"Z"].join(" ");
+}
+// Gráfico de torta con leyenda, para "Distribución de gastos" en los reportes.
+// items: [{label, value}]. Colores asignados automáticamente de PIE_COLORS.
+function renderPieChart(items, size=170){
+  const activos=items.filter(i=>i.value>0);
+  if(!activos.length) return '';
+  const total=activos.reduce((s,i)=>s+i.value,0);
+  let cumulative=0;
+  const r=size/2;
+  const paths=activos.map((i,idx)=>{
+    const startAngle=cumulative/total*360;
+    cumulative+=i.value;
+    const endAngle=cumulative/total*360;
+    const color=PIE_COLORS[idx%PIE_COLORS.length];
+    const d=endAngle-startAngle>=359.99?`M ${r},${r-r} A ${r},${r} 0 1,0 ${r-0.01},${r-r} Z`:describeArc(r,r,r,startAngle,endAngle);
+    return `<path d="${d}" fill="${color}" stroke="var(--bg2)" stroke-width="1"></path>`;
+  }).join('');
+  const legend=activos.map((i,idx)=>`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);padding:2px 0">
+      <span style="width:9px;height:9px;border-radius:2px;background:${PIE_COLORS[idx%PIE_COLORS.length]};display:inline-block;flex-shrink:0"></span>
+      <span style="flex:1">${i.label}</span>
+      <span style="font-family:var(--font-mono);color:var(--text3)">${pct(i.value,total)}</span>
+    </div>`).join('');
+  return `<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin:12px 0">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0">${paths}</svg>
+    <div style="flex:1;min-width:170px">${legend}</div>
+  </div>`;
+}
+// Portada del reporte — para imprimir/exportar con buena presentación (ej: para mostrarle a una empresa).
+function renderPortadaReporte(periodoTexto){
+  const hoy=new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return `<div class="report-section cover-page" style="text-align:center;padding:70px 20px 50px">
+    <div style="font-family:var(--font-display);font-size:34px;letter-spacing:4px;color:var(--accent);font-weight:900">MALIANTEO <span style="color:var(--accent2);font-family:var(--font-mono);letter-spacing:2px;font-size:18px;font-weight:400">✝ 2026</span></div>
+    <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-top:10px">La misa menos santa del país</div>
+    <div style="margin:60px 0 8px;font-family:var(--font-display);font-size:20px;color:var(--text);font-weight:700">Reporte financiero</div>
+    <div style="font-family:var(--font-mono);font-size:16px;color:var(--accent2);font-weight:700">${periodoTexto}</div>
+    <div style="margin-top:70px;font-size:11px;color:var(--text3)">Generado el ${hoy}</div>
+  </div>`;
+}
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
@@ -3204,6 +3333,24 @@ function sumaCategoriaMalianteo(fechas, cat){
     .filter(p=>(p.quienPaga||'Malianteo')==='Malianteo')
     .filter(p=>!(f.standBy && p.estado==='NP'))
     .reduce((ss,p)=>ss+p.monto,0),0);
+}
+// Detalle "solo nombres" de una categoría, agrupado por fecha, SIN montos — para mostrar en
+// "Distribución de gastos" del reporte qué compone cada categoría (ej: Extras → "Uber, Viáticos")
+// sin exponer cifras línea por línea.
+function detalleCategoriaSinMontos(fechas, cat){
+  const porFecha=[];
+  fechas.forEach(f=>{
+    const items=(f[cat]||[])
+      .filter(p=>(p.quienPaga||'Malianteo')==='Malianteo')
+      .filter(p=>!(f.standBy && p.estado==='NP'));
+    if(items.length) porFecha.push({fecha:f.fecha, nombres:items.map(p=>p.nombre)});
+  });
+  return porFecha;
+}
+function renderDetalleCategoriaHtml(fechas, cat){
+  const detalle=detalleCategoriaSinMontos(fechas, cat);
+  if(!detalle.length) return '';
+  return `<div style="font-size:11px;color:var(--text3);padding:2px 0 6px 4px;line-height:1.6">${detalle.map(d=>`${d.fecha}: ${d.nombres.join(', ')}`).join(' · ')}</div>`;
 }
 function balanceMalianteo(f){
   if(esCHNJueves(f)) return f.recaudado;
@@ -3320,7 +3467,7 @@ function renderReporteRango(){
     });
   });
  
-  let html='';
+  let html=renderPortadaReporte(desdeFmt+' al '+hastaFmt);
  
   if(sec.resumen) html+=`
     <div class="report-section">
@@ -3335,15 +3482,48 @@ function renderReporteRango(){
   if(sec.gastos) html+=`
     <div class="report-section">
       <h3>Distribución de gastos</h3>
+      ${renderPieChart([
+        {label:'PR',value:totalPR},
+        {label:'DJs',value:totalDJ},
+        {label:'PH',value:totalPH},
+        {label:'Pauta',value:totalPauta},
+        {label:'Diseño',value:totalDiseno},
+        {label:'Contenido',value:totalContenido},
+        {label:'Operativos',value:totalOperativos},
+        {label:'Merch',value:totalMerch},
+        {label:'Extras',value:totalGAdic},
+        {label:'Comisiones',value:totalCom},
+        {label:'Publicidad',value:totalPublicidadRango},
+        {label:'Diseño mens.',value:totalDisenoRango}
+      ])}
+      ${renderMiniBarChart([
+        {label:'PR',value:totalPR},
+        {label:'DJs',value:totalDJ,color:'var(--accent)'},
+        {label:'PH',value:totalPH,color:'var(--accent3)'},
+        {label:'Pauta',value:totalPauta},
+        {label:'Diseño',value:totalDiseno,color:'var(--accent3)'},
+        {label:'Contenido',value:totalContenido},
+        {label:'Operativos',value:totalOperativos,color:'var(--accent)'},
+        {label:'Merch',value:totalMerch,color:'var(--accent3)'},
+        {label:'Extras',value:totalGAdic},
+        {label:'Comisiones',value:totalCom,color:'var(--accent)'},
+        {label:'Publicidad',value:totalPublicidadRango,color:'var(--accent3)'},
+        {label:'Diseño mens.',value:totalDisenoRango}
+      ])}
       <div class="report-kv"><span class="report-k">PR / Promotores</span><span class="report-v">${fmt(totalPR)} <span style="color:var(--text3);font-size:11px">${pct(totalPR,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'pr')}
       <div class="report-kv"><span class="report-k">DJs</span><span class="report-v">${fmt(totalDJ)} <span style="color:var(--text3);font-size:11px">${pct(totalDJ,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'dj')}
       <div class="report-kv"><span class="report-k">PH</span><span class="report-v">${fmt(totalPH)} <span style="color:var(--text3);font-size:11px">${pct(totalPH,totalGastado)}</span></span></div>
-      ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>`:''}
-      ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>`:''}
+      ${renderDetalleCategoriaHtml(fechas,'ph')}
+      ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'pauta')}`:''}
+      ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'diseno')}`:''}
       <div class="report-kv"><span class="report-k">Creación de contenido</span><span class="report-v">${fmt(totalContenido)} <span style="color:var(--text3);font-size:11px">${pct(totalContenido,totalGastado)}</span></span></div>
-      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>`:''}
-      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>`:''}
+      ${renderDetalleCategoriaHtml(fechas,'contenido')}
+      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'operativos')}`:''}
+      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'merch')}`:''}
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGAdic)} <span style="color:var(--text3);font-size:11px">${pct(totalGAdic,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'gastos')}
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalCom)} <span style="color:var(--text3);font-size:11px">${pct(totalCom,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Depto Publicidad</span><span class="report-v">${fmt(totalPublicidadRango)} <span style="color:var(--text3);font-size:11px">${pct(totalPublicidadRango,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Depto Diseño (mensual)</span><span class="report-v">${fmt(totalDisenoRango)} <span style="color:var(--text3);font-size:11px">${pct(totalDisenoRango,totalGastado)}</span></span></div>
@@ -3410,6 +3590,21 @@ function renderReporteRango(){
             <span class="report-k">${c.concepto} <span style="color:var(--text3)">${c.fecha||''} · ${c.mes}</span></span>
             <span class="report-v red">${fmt(c.monto)}</span>
           </div>`).join('')}
+      </div>`:''}
+      <div class="report-kv" style="margin-top:8px;border-top:2px solid var(--border);padding-top:8px">
+        <span class="report-k" style="font-weight:700">Total Cristian debe (histórico completo)</span>
+        <span class="report-v red">${fmt(totalDeudaCristianGeneral())}</span>
+      </div>
+      ${pagosRealizadosCristian().length>0?`<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Pagos ya realizados por Cristian</div>
+        ${pagosRealizadosCristian().map(p=>`<div class="report-kv">
+            <span class="report-k">${p.concepto}${p.nota?' — '+p.nota:''} <span style="color:var(--text3)">${p.fecha||''} · ${p.mes||''}</span></span>
+            <span class="report-v green">${fmt(p.monto)}</span>
+          </div>`).join('')}
+        <div class="report-kv" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+          <span class="report-k" style="font-weight:600">Total pagado por Cristian</span>
+          <span class="report-v green">${fmt(totalPagadoCristian())}</span>
+        </div>
       </div>`:''}
     </div>`;
   }
@@ -4032,6 +4227,19 @@ function restoCristian(c){
   if(c.estado==='P' && !(c.pagos&&c.pagos.length)) return 0; // ítems viejos marcados pagados sin detalle de pagos
   return Math.max(0,(c.monto||0)-cobradoCristian(c));
 }
+// Todos los pagos que Cristian ya hizo (manuales con detalle de pagos + fechas automáticas marcadas como pagadas), sin filtro de mes.
+function pagosRealizadosCristian(){
+  const autoPagos=DB.fechas.filter(f=>f.compartCristian && f.estadoCristian==='P').map(f=>({
+    fecha:f.fecha, mes:f.mes, concepto:f.evento, monto:f.recaudado||0, nota:''
+  }));
+  const manualPagos=(DB.cristianExtra||[]).flatMap(c=>(c.pagos||[]).map(p=>({
+    fecha:p.fecha||'', mes:c.mes, concepto:c.concepto, monto:p.monto||0, nota:p.nota||''
+  })));
+  return [...autoPagos,...manualPagos];
+}
+function totalPagadoCristian(){ return pagosRealizadosCristian().reduce((s,p)=>s+p.monto,0); }
+// Total general que Cristian debe a Malianteo, sumando TODO el histórico (todos los meses), sin filtrar por mes.
+function totalDeudaCristianGeneral(){ return totalDeudaCristianPendiente(); }
 function renderDeudaCristian(){
   const el=document.getElementById('cristian-deudas-list');
   if(!el)return;
@@ -4683,7 +4891,7 @@ function renderReporte(){
   const rentabilidad=totalRecaudado?((balance/totalRecaudado)*100).toFixed(1):0;
   const bolichesDelMes=DB.boliches.filter(b=>b.mes===mes);
   const totalBoliches=bolichesDelMes.filter(b=>b.estado!=='P').reduce((s,b)=>s+b.monto,0);
-  const pendBolichePagos=fechas.reduce((s,f)=>s+restoPendienteBoliche(f),0);
+  const pendBolichePagos=fechas.filter(f=>!f.compartCristian).reduce((s,f)=>s+restoPendienteBoliche(f),0);
  
   // gastos por categoria
   const totalPR=sumaCategoriaMalianteo(fechas,'pr');
@@ -4707,7 +4915,8 @@ function renderReporte(){
     });
   });
  
-  document.getElementById('reporte-content').innerHTML=`
+  const mesCapitalizado=mes.charAt(0)+mes.slice(1).toLowerCase();
+  document.getElementById('reporte-content').innerHTML=renderPortadaReporte(mesCapitalizado+' 2026')+`
     <div class="report-section">
       <h3>Resumen ejecutivo — ${mes} 2026</h3>
       <div class="report-kv"><span class="report-k">Cantidad de fechas</span><span class="report-v">${fechas.length}</span></div>
@@ -4718,6 +4927,32 @@ function renderReporte(){
       ${fechas.filter(f=>f.standBy).length?`<div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--radius);font-size:12px;color:var(--text2)">
         ⏸ <strong>${fechas.filter(f=>f.standBy).length} fecha${fechas.filter(f=>f.standBy).length===1?'':'s'} en stand-by este mes</strong> (${fechas.filter(f=>f.standBy).map(f=>f.fecha+' — '+f.evento).join(', ')}) — no dejaron recaudado. Lo pendiente de PR/DJ está anotado pero no descontado del gasto de este mes; si se termina pagando, va a impactar en el balance del mes en que se resuelva.
       </div>`:''}
+      ${renderMiniBarChart([{label:'Recaudado',value:totalRecaudado,color:'var(--success)'},{label:'Gastado',value:totalGastado,color:'var(--danger)'}])}
+    </div>
+ 
+    <div class="report-section">
+      <h3>Evolución del mes — recaudado vs gastado por fecha</h3>
+      ${(()=>{
+        const dData=fechas.filter(f=>(f.recaudado>0)||(totalCostoMalianteo(f)>0)).map(f=>({
+          label:f.fecha+(f.evento?' '+f.evento.slice(0,10):''),
+          rec:f.recaudado||0,
+          gas:totalCostoMalianteo(f)
+        }));
+        if(!dData.length) return '<div class="empty" style="padding:12px">Sin datos cargados este mes</div>';
+        const maxC=Math.max(...dData.map(d=>Math.max(d.rec,d.gas)),1);
+        return `<div class="bar-chart" style="margin:6px 0">${dData.map(d=>`
+          <div class="bar-row">
+            <div class="bar-label" style="width:110px">${d.label}</div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div class="bar-track" style="height:6px"><div class="bar-fill" style="width:${Math.round((d.rec/maxC)*100)}%;background:var(--success)"></div></div>
+              <div class="bar-track" style="height:6px"><div class="bar-fill" style="width:${Math.round((d.gas/maxC)*100)}%;background:var(--danger)"></div></div>
+            </div>
+            <div class="bar-val" style="font-size:10px;line-height:1.6">
+              <span style="color:var(--success)">${fmt(d.rec)}</span><br>
+              <span style="color:var(--danger)">${fmt(d.gas)}</span>
+            </div>
+          </div>`).join('')}</div>`;
+      })()}
     </div>
  
     <div class="report-section">
@@ -4740,15 +4975,50 @@ function renderReporte(){
  
     <div class="report-section">
       <h3>Distribución de gastos</h3>
+      ${renderPieChart([
+        {label:'PR',value:totalPR},
+        {label:'DJs',value:totalDJ},
+        {label:'PH',value:totalPH},
+        {label:'Pauta',value:totalPauta},
+        {label:'Diseño',value:totalDiseno},
+        {label:'Contenido',value:totalContenido},
+        {label:'Operativos',value:totalOperativos},
+        {label:'Merch',value:totalMerch},
+        {label:'Extras',value:totalGastosAd},
+        {label:'Comisiones',value:totalComisiones},
+        {label:'Sueldos fijos',value:totalMens},
+        {label:'Publicidad',value:totalDeptoMalianteo(mes,'publicidad')},
+        {label:'Diseño mens.',value:totalDeptoMalianteo(mes,'diseno')}
+      ])}
+      ${renderMiniBarChart([
+        {label:'PR',value:totalPR},
+        {label:'DJs',value:totalDJ,color:'var(--accent)'},
+        {label:'PH',value:totalPH,color:'var(--accent3)'},
+        {label:'Pauta',value:totalPauta},
+        {label:'Diseño',value:totalDiseno,color:'var(--accent3)'},
+        {label:'Contenido',value:totalContenido},
+        {label:'Operativos',value:totalOperativos,color:'var(--accent)'},
+        {label:'Merch',value:totalMerch,color:'var(--accent3)'},
+        {label:'Extras',value:totalGastosAd},
+        {label:'Comisiones',value:totalComisiones,color:'var(--accent)'},
+        {label:'Sueldos fijos',value:totalMens,color:'var(--accent3)'},
+        {label:'Publicidad',value:totalDeptoMalianteo(mes,'publicidad')},
+        {label:'Diseño mens.',value:totalDeptoMalianteo(mes,'diseno'),color:'var(--accent3)'}
+      ])}
       <div class="report-kv"><span class="report-k">PR / Promotores</span><span class="report-v">${fmt(totalPR)} <span style="color:var(--text3);font-size:11px">${pct(totalPR,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'pr')}
       <div class="report-kv"><span class="report-k">DJs</span><span class="report-v">${fmt(totalDJ)} <span style="color:var(--text3);font-size:11px">${pct(totalDJ,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'dj')}
       <div class="report-kv"><span class="report-k">PH</span><span class="report-v">${fmt(totalPH)} <span style="color:var(--text3);font-size:11px">${pct(totalPH,totalGastado)}</span></span></div>
-      ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>`:''}
-      ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>`:''}
+      ${renderDetalleCategoriaHtml(fechas,'ph')}
+      ${totalPauta>0?`<div class="report-kv"><span class="report-k">Pauta (histórico por fecha)</span><span class="report-v">${fmt(totalPauta)} <span style="color:var(--text3);font-size:11px">${pct(totalPauta,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'pauta')}`:''}
+      ${totalDiseno>0?`<div class="report-kv"><span class="report-k">Diseño (histórico por fecha)</span><span class="report-v">${fmt(totalDiseno)} <span style="color:var(--text3);font-size:11px">${pct(totalDiseno,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'diseno')}`:''}
       <div class="report-kv"><span class="report-k">Creación de contenido</span><span class="report-v">${fmt(totalContenido)} <span style="color:var(--text3);font-size:11px">${pct(totalContenido,totalGastado)}</span></span></div>
-      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>`:''}
-      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>`:''}
+      ${renderDetalleCategoriaHtml(fechas,'contenido')}
+      ${totalOperativos>0?`<div class="report-kv"><span class="report-k">Gastos operativos</span><span class="report-v">${fmt(totalOperativos)} <span style="color:var(--text3);font-size:11px">${pct(totalOperativos,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'operativos')}`:''}
+      ${totalMerch>0?`<div class="report-kv"><span class="report-k">Merch</span><span class="report-v">${fmt(totalMerch)} <span style="color:var(--text3);font-size:11px">${pct(totalMerch,totalGastado)}</span></span></div>${renderDetalleCategoriaHtml(fechas,'merch')}`:''}
       <div class="report-kv"><span class="report-k">Extras (gastos adicionales)</span><span class="report-v">${fmt(totalGastosAd)} <span style="color:var(--text3);font-size:11px">${pct(totalGastosAd,totalGastado)}</span></span></div>
+      ${renderDetalleCategoriaHtml(fechas,'gastos')}
       <div class="report-kv"><span class="report-k">Comisiones RRPP</span><span class="report-v">${fmt(totalComisiones)} <span style="color:var(--text3);font-size:11px">${pct(totalComisiones,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Sueldos mensuales fijos</span><span class="report-v">${fmt(totalMens)} <span style="color:var(--text3);font-size:11px">${pct(totalMens,totalGastado)}</span></span></div>
       <div class="report-kv"><span class="report-k">Depto Publicidad</span><span class="report-v">${fmt(totalDeptoMalianteo(mes,'publicidad'))} <span style="color:var(--text3);font-size:11px">${pct(totalDeptoMalianteo(mes,'publicidad'),totalGastado)}</span></span></div>
@@ -4769,11 +5039,12 @@ function renderReporte(){
       }
     </div>
  
-    <div class="report-section">
+    <div class="report-section page-break">
       <h3>Estado de cobro por fecha</h3>
-      ${fechas.filter(f=>(f.totalBoliche||f.recaudado)>0).length===0
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px">No incluye fechas compartidas con Cristian — esas se trackean en "Deuda de Cristian (socio)" más abajo.</div>
+      ${fechas.filter(f=>!f.compartCristian && (f.totalBoliche||f.recaudado)>0).length===0
         ? '<div class="empty" style="padding:12px">Sin recaudación cargada en este mes</div>'
-        : fechas.filter(f=>(f.totalBoliche||f.recaudado)>0).map(f=>{
+        : fechas.filter(f=>!f.compartCristian && (f.totalBoliche||f.recaudado)>0).map(f=>{
             const total=f.totalBoliche||f.recaudado||0;
             const cobrado=(f.pagosBoliche||[]).reduce((s,p)=>s+p.monto,0);
             const resto=total-cobrado;
@@ -4829,6 +5100,21 @@ function renderReporte(){
             <span class="report-k">${c.concepto} <span style="color:var(--text3)">${c.fecha||''} · ${c.mes}</span></span>
             <span class="report-v red">${fmt(c.monto)}</span>
           </div>`).join('')}
+      </div>`:''}
+      <div class="report-kv" style="margin-top:8px;border-top:2px solid var(--border);padding-top:8px">
+        <span class="report-k" style="font-weight:700">Total Cristian debe (histórico completo)</span>
+        <span class="report-v red">${fmt(totalDeudaCristianGeneral())}</span>
+      </div>
+      ${pagosRealizadosCristian().length>0?`<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Pagos ya realizados por Cristian</div>
+        ${pagosRealizadosCristian().map(p=>`<div class="report-kv">
+            <span class="report-k">${p.concepto}${p.nota?' — '+p.nota:''} <span style="color:var(--text3)">${p.fecha||''} · ${p.mes||''}</span></span>
+            <span class="report-v green">${fmt(p.monto)}</span>
+          </div>`).join('')}
+        <div class="report-kv" style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+          <span class="report-k" style="font-weight:600">Total pagado por Cristian</span>
+          <span class="report-v green">${fmt(totalPagadoCristian())}</span>
+        </div>
       </div>`:''}
     </div>
  
