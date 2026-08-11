@@ -2532,7 +2532,7 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "evento": "Cruza",
       "recaudado": 2935165.68,
-      "estadoRecaudado": "ADEUDA",
+      "estadoRecaudado": "PARCIAL",
       "pptoDJ": 800000,
       "pptoPH": 400000,
       "notas": "",
@@ -2543,7 +2543,18 @@ const DEFAULT_DB = {
         "Molfe"
       ],
       "totalBoliche": 2935165.68,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Transfe PATO",
+          "monto": 1865323.14,
+          "fechaPago": "2026-08-04"
+        },
+        {
+          "nota": "Transfe PATO",
+          "monto": 1069842.54,
+          "fechaPago": "2026-08-07"
+        }
+      ],
       "pr": [
         {
           "nombre": "Fix",
@@ -2589,7 +2600,7 @@ const DEFAULT_DB = {
           "nombre": "PH",
           "monto": 400000,
           "estado": "NP",
-          "quienPaga": "Malianteo"
+          "quienPaga": "Cruza"
         }
       ],
       "gastos": [],
@@ -2680,7 +2691,7 @@ const DEFAULT_DB = {
       "mes": "JULIO",
       "evento": "Cruza",
       "recaudado": 5201016.53,
-      "estadoRecaudado": "ADEUDA",
+      "estadoRecaudado": "PARCIAL",
       "pptoDJ": 800000,
       "pptoPH": 400000,
       "notas": "",
@@ -2693,7 +2704,13 @@ const DEFAULT_DB = {
         "Fiama"
       ],
       "totalBoliche": 5201016.53,
-      "pagosBoliche": [],
+      "pagosBoliche": [
+        {
+          "nota": "Transfe PATO",
+          "monto": 1930157.46,
+          "fechaPago": "2026-08-07"
+        }
+      ],
       "pr": [
         {
           "nombre": "Lara",
@@ -2828,6 +2845,97 @@ const DEFAULT_DB = {
           "quienPaga": "Malianteo"
         }
       ],
+      "operativos": [],
+      "merch": []
+    },
+    {
+      "id": 26,
+      "fecha": "01/08",
+      "fechaISO": "2026-08-01",
+      "mes": "AGOSTO",
+      "evento": "Cruza",
+      "recaudado": 3837320.16,
+      "estadoRecaudado": "ADEUDA",
+      "pptoDJ": 800000,
+      "pptoPH": 400000,
+      "notas": "",
+      "compartCristian": false,
+      "standBy": false,
+      "estadoCristian": "NP",
+      "asistencia": [],
+      "totalBoliche": 3837320.16,
+      "pagosBoliche": [],
+      "pr": [
+        {
+          "nombre": "Molfe",
+          "monto": 150000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Maga",
+          "monto": 200000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fiama",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Lara",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fix",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Nico W",
+          "monto": 100000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fede Bugari",
+          "monto": 50000,
+          "estado": "NP",
+          "quienPaga": "Malianteo"
+        }
+      ],
+      "dj": [
+        {
+          "nombre": "Lil Paper",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        },
+        {
+          "nombre": "Mcrone",
+          "monto": 400000,
+          "estado": "P",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "ph": [
+        {
+          "nombre": "Mati PH",
+          "monto": 400000,
+          "estado": "NP",
+          "quienPaga": "Cruza"
+        }
+      ],
+      "gastos": [],
+      "comisiones": [],
+      "pauta": [],
+      "diseno": [],
+      "contenido": [],
       "operativos": [],
       "merch": []
     }
@@ -2970,6 +3078,32 @@ const DEFAULT_DB = {
         "estado": "NP",
         "notas": ""
       }
+    ],
+    "AGOSTO": [
+      {
+        "nombre": "Mica cm",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Anto Fantini",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Juan",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      },
+      {
+        "nombre": "Flor",
+        "monto": 0,
+        "estado": "NP",
+        "notas": ""
+      }
     ]
   },
   "deptos": {
@@ -3027,6 +3161,18 @@ const DEFAULT_DB = {
     },
     "JUNIO": {
       "publicidad": [],
+      "diseno": []
+    },
+    "AGOSTO": {
+      "publicidad": [
+        {
+          "nombre": "Publi",
+          "monto": 188881.02,
+          "estado": "NP",
+          "quienPaga": "Malianteo",
+          "fechaObs": "02//08 - 09/08"
+        }
+      ],
       "diseno": []
     }
   },
@@ -4033,8 +4179,10 @@ function guardarBoliche(){
   renderBoliches();
   toast('Deuda guardada');
 }
-// Personal con sueldo fijo mensual (tope, no cobra por fecha): solo se marca asistencia
-const PERSONAL_FIJO = ['Maga','Molfe','Fiama'];
+// Personal con sueldo fijo mensual (tope, no cobra por fecha): solo se marca asistencia.
+// PAUSADO a partir del 01/08/2026 — Maga, Molfe y Fiama vuelven a cobrar por fecha (esquema anterior).
+// Para reactivar el sueldo fijo en el futuro, volver a poner: ['Maga','Molfe','Fiama']
+const PERSONAL_FIJO = [];
 // PAGOS MENSUALES FIJOS
 const MENSUALES_FIJOS = ['Mica cm','Anto Fantini','Juan','Flor'];
 // Montos mensuales acordados por persona/concepto, para comparar contra lo efectivamente pagado
@@ -4589,6 +4737,10 @@ function quienPagaSelect(data={}){
 function renderAsistenciaFijoCheckboxes(marcados=[]){
   const el=document.getElementById('asistencia-fijo-list');
   if(!el)return;
+  if(!PERSONAL_FIJO.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3)">Nadie con sueldo fijo por el momento — Maga, Molfe y Fiama se cargan como PR normal, por fecha, en la sección de arriba.</div>';
+    return;
+  }
   el.innerHTML=PERSONAL_FIJO.map(nombre=>`
     <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
       <input type="checkbox" class="asistencia-fijo-check" value="${nombre}" ${marcados.includes(nombre)?'checked':''} style="accent-color:var(--accent);width:14px;height:14px">
