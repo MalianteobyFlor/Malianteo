@@ -2908,6 +2908,12 @@ const DEFAULT_DB = {
           "monto": 0,
           "estado": "P",
           "quienPaga": "Malianteo"
+        },
+        {
+          "nombre": "Fiama",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
         }
       ],
       "dj": [
@@ -3000,7 +3006,7 @@ const DEFAULT_DB = {
         },
         {
           "nombre": "Fiama",
-          "monto": 25000,
+          "monto": 50000,
           "estado": "P",
           "quienPaga": "Malianteo"
         },
@@ -3217,7 +3223,14 @@ const DEFAULT_DB = {
           "fechaPago": "2026-08-31"
         }
       ],
-      "pr": [],
+      "pr": [
+        {
+          "nombre": "Fiama",
+          "monto": 50000,
+          "estado": "P",
+          "quienPaga": "Malianteo"
+        }
+      ],
       "dj": [],
       "ph": [
         {
@@ -3452,7 +3465,13 @@ const DEFAULT_DB = {
         }
       ],
       "gastos": [],
-      "comisiones": [],
+      "comisiones": [
+        {
+          "nombre": "Fiama",
+          "monto": 14500,
+          "estado": "NP"
+        }
+      ],
       "pauta": [],
       "diseno": [],
       "contenido": [],
@@ -4033,7 +4052,9 @@ function esCHNJueves(f){
   return dia===4;
 }
 function allStaff(f){return [...(f.pr||[]),...(f.dj||[]),...(f.ph||[]),...(f.gastos||[]),...(f.comisiones||[]),...(f.pauta||[]),...(f.diseno||[]),...(f.contenido||[]),...(f.operativos||[]),...(f.merch||[])]}
-function pendientes(f){return allStaff(f).filter(p=>p.estado==='NP')}
+// Solo lo pendiente que Malianteo efectivamente debe pagar — excluye lo marcado con
+// "¿Quién paga?" distinto de Malianteo (ej: PH que paga Cruza directo), igual que el balance.
+function pendientes(f){return allStaff(f).filter(p=>p.estado==='NP' && (p.quienPaga||'Malianteo')==='Malianteo')}
 function totalCosto(f){return allStaff(f).reduce((s,p)=>s+p.monto,0)}
 // Solo lo marcado como "Malianteo" en el selector de "¿Quién paga?" (los ítems sin selector, como Comisiones, siempre cuentan)
 function totalCostoMalianteo(f){
